@@ -1,3 +1,20 @@
+.ONESHELL:
+SHELL := /bin/bash
+.SHELLFLAGS += -e
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+ENV_FILE := .env
+export $(shell sed 's/=.*//' $(ENV_FILE))
+
+reset: auth-target ce-reset
+
+auth-target:
+	PROJECT_NAME="cde-rolling-bm-iaas"
+	ibmcloud login -a https://cloud.ibm.com -r us-south -g CDE -q
+	ibmcloud ce project target --name cde-rolling-bm-iaas
+
+ce-reset: ce-delete ce-create ce-push-and-follow
+
 push-and-follow: gh-push ce-build-run ce-submit-job
 
 gh-push:
@@ -5,7 +22,7 @@ gh-push:
 
 ce-build-run:
 	
-	buildName="pull-all-vars-build-6kwvg"
+	
 	export buildRunDate=$$(date +%Y%m%d%H%M)
 	
 	echo "Building container image from source..."
@@ -16,7 +33,7 @@ ce-build-run:
 
 ce-submit-job:
 
-	JOB_NAME="pull-all-vars"
+	
 	jobRunDate=$$(date +%Y%m%d%H%M)
 	
 	echo "Submitting job run to Code Engine"
