@@ -53,6 +53,7 @@ def getCeVars():
 def getAllVars():
     for name, value in os.environ.items():
         print("{0}: {1}".format(name, value))
+    return allVars
 
 def etcdRead(etcdClient, etcdKey):
     etcdValue = etcdClient.get(etcdKey)
@@ -66,15 +67,15 @@ def etcdWrite(etcdClient):
 
 try:
     
-    # print("Attempting to pull all environment variables")
-    # allVars = getAllVars()
+    print("Attempting to pull all environment variables")
+    allVars = getAllVars()
     # print("All Vars type: " + str(type(allVars)))
-    # print(allVars)
-    print("Attempting to pull CE service variables")
-    ceVars = getCeVars()
-    print("CE Vars type: " + str(type(ceVars)))
-    print(ceVars)
-    print("CE service variables pulled")
+    print(allVars)
+    # print("Attempting to pull CE service variables")
+    # ceVars = getCeVars()
+    # print("CE Vars type: " + str(type(ceVars)))
+    # print(ceVars)
+    # print("CE service variables pulled")
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
