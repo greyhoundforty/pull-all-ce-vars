@@ -9,4 +9,4 @@ COPY . .
 
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python
 
-CMD [ "python", "./main.py" ]
+CMD [ "python", "./all.py" ]
