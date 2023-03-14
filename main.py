@@ -78,12 +78,12 @@ def getCeVars():
 
 def ceVarsToJson():
     allVars = getCeVars()
-    ceVarsJson = json.dumps(allVars)
+    ceVarsJson = json.loads(allVars)
     return ceVarsJson
 
 def ceVarsToList():
     jsonVars = ceVarsToJson()
-    ceVarsList = list(jsonVars)[1]
+    ceVarsList = list(jsonVars.values())[1]
     return ceVarsList
 
 def getAllVars():
@@ -112,10 +112,10 @@ try:
     # print("CE Vars type: " + str(type(ceVars)))
     # print(ceVars)
     # print("CE service variables pulled")
-    # print("Attempting to convert CE service variables to JSON")
-    # jsonVars = ceVarsToJson()
-    # print("JSON Vars type: " + str(type(jsonVars)))
-    # print(jsonVars)
+    print("Attempting to convert CE service variables to JSON")
+    jsonVars = ceVarsToJson()
+    print("JSON Vars type: " + str(type(jsonVars)))
+    print(jsonVars)
     print("Attempting to convert JSON to list")
     listVars = ceVarsToList()
     print("List Vars type: " + str(type(listVars)))
