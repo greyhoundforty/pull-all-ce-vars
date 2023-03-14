@@ -83,7 +83,7 @@ def ceVarsToJson():
 
 def ceVarsToList():
     jsonVars = ceVarsToJson()
-    ceVarsList = list(jsonVars)
+    ceVarsList = list(jsonVars.values())[1]
     return ceVarsList
 
 def getAllVars():
