@@ -144,7 +144,7 @@ try:
     print("iterated list type: " + str(type(interatedList)))
     print(interatedList)
     print("pull credentials from COS list")
-    print(interatedList['credentials'])
+    print(interatedList['credentials']['apikey'])
     # print("printing Etcd list var")
     # print(listVars[1])
     # print("printing LogDNA list var")
