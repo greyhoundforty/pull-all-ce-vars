@@ -75,7 +75,7 @@ etcdClient = etcd3.client(
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
     allCeVars = list(getAllCeVars)
-    return getAllCeVars
+    return allCeVars
 
 def getAllVars():
     for name, value in os.environ.items():
