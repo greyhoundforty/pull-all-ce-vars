@@ -8,19 +8,19 @@ from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
 
 # Set up IAM authenticator and pull refresh token
-# authenticator = IAMAuthenticator(
-#     apikey=os.environ.get('IBMCLOUD_API_KEY'),
-#     client_id='bx',
-#     client_secret='bx'
-#     )
+authenticator = IAMAuthenticator(
+    apikey=os.environ.get('IBMCLOUD_API_KEY'),
+    client_id='bx',
+    client_secret='bx'
+    )
 
-# refreshToken = authenticator.token_manager.request_token()['refresh_token']
+refreshToken = authenticator.token_manager.request_token()['refresh_token']
 
-# # Set up Schematics service client and declare workspace ID
-# workspaceId = os.environ.get('WORKSPACE_ID')
-# schematicsService = SchematicsV1(authenticator=authenticator)
-# schematicsURL = "https://us.schematics.cloud.ibm.com"
-# schematicsService.set_service_url(schematicsURL)
+# Set up Schematics service client and declare workspace ID
+workspaceId = os.environ.get('WORKSPACE_ID')
+schematicsService = SchematicsV1(authenticator=authenticator)
+schematicsURL = "https://us.schematics.cloud.ibm.com"
+schematicsService.set_service_url(schematicsURL)
 
 etcdServiceVars = os.environ.get('DB_CONNECTION_CONNECTION')
 connectionJson = json.loads(etcdServiceVars)
@@ -66,10 +66,10 @@ def etcdWrite(etcdClient):
 
 try:
     
-    print("Attempting to pull all environment variables")
-    allVars = getAllVars()
-    print("All Vars type: " + str(type(allVars)))
-    print(allVars)
+    # print("Attempting to pull all environment variables")
+    # allVars = getAllVars()
+    # print("All Vars type: " + str(type(allVars)))
+    # print(allVars)
     print("Attempting to pull CE service variables")
     ceVars = getCeVars()
     print("CE Vars type: " + str(type(ceVars)))

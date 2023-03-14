@@ -6,13 +6,13 @@ gh-push:
 ce-build-run:
 	
 	buildName="pull-all-vars-build-6kwvg"
-	buildRunDate=$$(date +%Y%m%d%H%M)
+	export buildRunDate=$$(date +%Y%m%d%H%M)
 	
 	echo "Building container image from source..."
 	
-	ibmcloud ce buildrun submit --name buildrun-$${buildRunDate} --build ${buildName}
+	ibmcloud ce buildrun submit --name buildrun-$$(date +%Y%m%d%H%M) --build ${buildName}
 	
-	ibmcloud ce buildrun logs -f -n $${buildRunDate}-buildrun
+	ibmcloud ce buildrun logs -f -n buildrun-$$(date +%Y%m%d%H%M)
 
 ce-submit-job:
 
@@ -21,7 +21,7 @@ ce-submit-job:
 	
 	echo "Submitting job run to Code Engine"
 	
-	ibmcloud ce jobrun submit --name "jobrun-$${jobRunDate}"  --job $${JOB_NAME} 
+	ibmcloud ce jobrun submit --name jobrun-$$(date +%Y%m%d%H%M)  --job ${JOB_NAME} 
 
 	echo "Following jobrun logs" 
 
