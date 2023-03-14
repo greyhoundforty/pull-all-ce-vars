@@ -8,6 +8,9 @@ from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
 import logging
 from logdna import LogDNAHandler
+import ibm_boto3
+from ibm_botocore.client import Config, ClientError
+
 
 # Useful for debugging, prints all environment variables
 # for name, value in os.environ.items():
@@ -72,6 +75,19 @@ etcdClient = etcd3.client(
     password=connectionVars['authentication']['password']
 )
 
+# # Constants for IBM COS values
+# COS_ENDPOINT = "<endpoint>" # Current list avaiable at https://control.cloud-object-storage.cloud.ibm.com/v2/endpoints
+# COS_API_KEY_ID = "<api-key>" # eg "W00YixxxxxxxxxxMB-odB-2ySfTrFBIQQWanc--P3byk"
+# COS_INSTANCE_CRN = "<service-instance-id>" # eg "crn:v1:bluemix:public:cloud-object-storage:global:a/3bf0d9003xxxxxxxxxx1c3e97696b71c:d6f04d83-6c4f-4a62-a165-696756d63903::"
+
+# # Create resource
+# cos = ibm_boto3.resource("s3",
+#     ibm_api_key_id=COS_API_KEY_ID,
+#     ibm_service_instance_id=COS_INSTANCE_CRN,
+#     config=Config(signature_version="oauth"),
+#     endpoint_url=COS_ENDPOINT
+# )
+
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
     return getAllCeVars
@@ -121,12 +137,17 @@ try:
     # print("List Vars type: " + str(type(listVars)))
     # print(listVars)
     print("printing COS list var")
-    print(listVars[0])
-    print("printing Etcd list var")
-    print(listVars[1])
-    print("printing LogDNA list var")
-    print(listVars[2])
-    print("attempting etcd write")
+    cosVars = listVars[0]
+    print("var type: " + str(type(cosVars)))
+    print(cosVars)
+    interatedList = cosVars[0]
+    print("iterated list type: " + str(type(interatedList)))
+    print(interatedList)
+    # print("printing Etcd list var")
+    # print(listVars[1])
+    # print("printing LogDNA list var")
+    # print(listVars[2])
+    # print("attempting etcd write")
     etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
