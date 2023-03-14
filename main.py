@@ -3,6 +3,24 @@ import json
 import base64
 import os
 import etcd3
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_cloud_sdk_core import ApiException
+from ibm_schematics.schematics_v1 import SchematicsV1
+
+# Set up IAM authenticator and pull refresh token
+authenticator = IAMAuthenticator(
+    apikey=os.environ.get('IBMCLOUD_API_KEY'),
+    client_id='bx',
+    client_secret='bx'
+    )
+
+refreshToken = authenticator.token_manager.request_token()['refresh_token']
+
+# Set up Schematics service client and declare workspace ID
+workspaceId = os.environ.get('WORKSPACE_ID')
+schematicsService = SchematicsV1(authenticator=authenticator)
+schematicsURL = "https://us.schematics.cloud.ibm.com"
+schematicsService.set_service_url(schematicsURL)
 
 etcdServiceVars = os.environ.get('DB_CONNECTION_CONNECTION')
 connectionJson = json.loads(etcdServiceVars)
@@ -14,7 +32,6 @@ ca_cert=base64.b64decode(encodedCert)
 decodedCert = ca_cert.decode('utf-8')
 
 etcdCert = '/usr/src/app/' + certFileName
-print(etcdCert)
 with open(etcdCert, 'w+') as output_file:
     output_file.write(decodedCert)
 
@@ -28,22 +45,31 @@ etcdClient = etcd3.client(
     password=connectionVars['authentication']['password']
 )
 
+def getCeVars():
+    getAllCeVars = os.environ.get('CE_SERVICES')
+    ceVars = list(connectionJson.values())
+    return ceVars
+
+def getAllVars():
+    for name, value in os.environ.items():
+        print("{0}: {1}".format(name, value))
+
+def etcdRead(etcdClient, etcdKey):
+    etcdValue = etcdClient.get(etcdKey)
+    return etcdValue
+
 # Write instance IDs to etcd service
 def etcdWrite(etcdClient):
-    print("Attempting to write albumns to etcd:")
-    etcdClient.put('/radiohead/albums/1', 'pablo-honey')
-    etcdClient.put('/radiohead/albums/2', 'the-bends')
-    etcdClient.put('/radiohead/albums/3', 'ok-computer')
-    etcdClient.put('/radiohead/albums/4', 'kid-a')
-    etcdClient.put('/radiohead/albums/5', 'amnesiac')
-    etcdClient.put('/radiohead/albums/6', 'hail-to-the-thief')
-    etcdClient.put('/radiohead/albums/7', 'in-rainbows')
-    etcdClient.put('/radiohead/albums/8', 'the-king-of-limbs')
-    etcdClient.put('/radiohead/albums/9', 'a-moon-shaped-pool')
-    print("Albums written to etcd")
+    print("Attempting to write Schematics instance IDs to etcd:")
+    ubuntuToCancel = etcdRead(etcdClient, '/current-servers/bare-metal/ubuntu-server-id')
+    
 
 try:
-    etcdWrite(etcdClient)
+    print("Attempting to pull all environment variables")
+    getAllVars()
+    print("Atte,pting to pull CE service variables")
+    getCeVars()
+    print("CE service variables pulled")
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
