@@ -77,7 +77,8 @@ def getCeVars():
     return allCeVars
 
 def ceVarsToJson():
-    ceVarsJson = json.dumps(getCeVars())
+    allVars = getCeVars()
+    ceVarsJson = json.dumps(allVars)
     return ceVarsJson
 
 def ceVarsToList():
@@ -89,14 +90,14 @@ def getAllVars():
         print("{0}: {1}".format(name, value))
     return allVars
 
-def etcdRead(etcdClient, etcdKey):
-    etcdValue = etcdClient.get(etcdKey)
-    return etcdValue
+# def etcdRead(etcdClient, etcdKey):
+#     etcdValue = etcdClient.get(etcdKey)
+#     return etcdValue
 
-# Write instance IDs to etcd service
-def etcdWrite(etcdClient):
-    print("Attempting to write Schematics instance IDs to etcd:")
-    ubuntuToCancel = etcdRead(etcdClient, '/current-servers/bare-metal/ubuntu-server-id')
+# # Write instance IDs to etcd service
+# def etcdWrite(etcdClient):
+#     print("Attempting to write Schematics instance IDs to etcd:")
+#     ubuntuToCancel = etcdRead(etcdClient, '/current-servers/bare-metal/ubuntu-server-id')
 
 
 try:
