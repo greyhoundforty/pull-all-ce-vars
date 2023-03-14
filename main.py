@@ -74,8 +74,15 @@ etcdClient = etcd3.client(
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
-    allCeVars = list(getAllCeVars)
     return allCeVars
+
+def ceVarsToJson():
+    ceVarsJson = json.dumps(getCeVars())
+    return ceVarsJson
+
+def ceVarsToList():
+    ceVarsList = list(ceVarsToJson().values())
+    return ceVarsDict
 
 def getAllVars():
     for name, value in os.environ.items():
@@ -103,6 +110,14 @@ try:
     print("CE Vars type: " + str(type(ceVars)))
     print(ceVars)
     print("CE service variables pulled")
+    print("Attempting to convert CE service variables to JSON")
+    jsonVars = ceVarsToJson()
+    print("JSON Vars type: " + str(type(jsonVars)))
+    print(jsonVars)
+    print("Attempting to convert JSON to list")
+    listVars = ceVarsToList()
+    print("List Vars type: " + str(type(listVars)))
+    print(listVars)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
