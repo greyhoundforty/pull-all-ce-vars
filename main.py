@@ -95,11 +95,11 @@ def getAllVars():
 #     etcdValue = etcdClient.get(etcdKey)
 #     return etcdValue
 
-# # Write instance IDs to etcd service
-# def etcdWrite(etcdClient):
-#     print("Attempting to write Schematics instance IDs to etcd:")
-#     ubuntuToCancel = etcdRead(etcdClient, '/current-servers/bare-metal/ubuntu-server-id')
-
+# Write nonsense to etcd service
+def etcdWrite(etcdClient):
+    print("Attempting to write to etcd instance:")
+    firstKey = etcdClient.put('/nonsense/id/1', '1234567890')
+    secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
 try:
     
@@ -126,6 +126,8 @@ try:
     print(listVars[1])
     print("printing LogDNA list var")
     print(listVars[2])
+    print("attempting etcd write")
+    etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
