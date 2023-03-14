@@ -6,6 +6,33 @@ import etcd3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
+import logging
+from logdna import LogDNAHandler
+
+# Useful for debugging, prints all environment variables
+# for name, value in os.environ.items():
+#     print("{0}: {1}".format(name, value))
+
+# loggingIngestionKey = os.environ.get('LOGDNA_INGESTION_KEY')
+
+# log = logging.getLogger('logdna')
+# log.setLevel(logging.INFO)
+
+# options = {
+#   'env': 'code-engine',
+#   'tags': 'python-etcd',
+#   'app': 'python-etcd-app',
+#   'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+#   'log_error_response': True
+# }
+
+# logAnalysis = LogDNAHandler(loggingIngestionKey, options)
+
+# log.addHandler(logAnalysis)
+
+# log.warning("Warning message", extra={'app': 'bloop'})
+# log("Info message from " + str(os.environ.get('HOSTNAME')))
+
 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
@@ -47,8 +74,7 @@ etcdClient = etcd3.client(
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
-    ceVars = list(connectionJson.values())
-    return ceVars
+    return getAllCeVars
 
 def getAllVars():
     for name, value in os.environ.items():
@@ -67,15 +93,15 @@ def etcdWrite(etcdClient):
 
 try:
     
-    print("Attempting to pull all environment variables")
-    allVars = getAllVars()
-    # print("All Vars type: " + str(type(allVars)))
-    print(allVars)
-    # print("Attempting to pull CE service variables")
-    # ceVars = getCeVars()
-    # print("CE Vars type: " + str(type(ceVars)))
-    # print(ceVars)
-    # print("CE service variables pulled")
+    # print("Attempting to pull all environment variables")
+    # allVars = getAllVars()
+    # # print("All Vars type: " + str(type(allVars)))
+    # print(allVars)
+    print("Attempting to pull CE service variables")
+    ceVars = getCeVars()
+    print("CE Vars type: " + str(type(ceVars)))
+    print(ceVars)
+    print("CE service variables pulled")
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
