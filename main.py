@@ -4,7 +4,7 @@ import base64
 import os
 import etcd3
 
-etcdServiceVars = os.environ.get('DB_CONNECTION')
+etcdServiceVars = os.environ.get('DB_CONNECTION_CONNECTION')
 connectionJson = json.loads(etcdServiceVars)
 connectionVars = list(connectionJson.values())[1]
 encodedCert = connectionVars['certificate']['certificate_base64']
@@ -30,7 +30,6 @@ etcdClient = etcd3.client(
 
 # Write instance IDs to etcd service
 def etcdWrite(etcdClient):
-    log.info("Connected to etcd service...")
     print("Attempting to write albumns to etcd:")
     etcdClient.put('/radiohead/albums/1', 'pablo-honey')
     etcdClient.put('/radiohead/albums/2', 'the-bends')
