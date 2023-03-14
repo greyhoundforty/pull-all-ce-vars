@@ -120,6 +120,12 @@ try:
     listVars = ceVarsToList()
     print("List Vars type: " + str(type(listVars)))
     print(listVars)
+    print("printing first list var")
+    print(listVars[0])
+    print("printing second list var")
+    print(listVars[1])
+    print("printing third list var")
+    print(listVars[2])
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
