@@ -107,7 +107,8 @@ def etcdWrite(etcdClient):
 
 try:
     dbVars = etcdClient()
-    print(dbVars)
+    item1 = dbVars[0]
+    print(item1)
 
 except KeyError():
     print("Key error")
