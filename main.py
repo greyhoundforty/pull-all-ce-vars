@@ -75,19 +75,7 @@ etcdClient = etcd3.client(
     password=connectionVars['authentication']['password']
 )
 
-# Get COS credentials from Schematics workspace
-listVars = ceVarsToList()
-cosApiKey = listVars[0]['credentials']['apikey']
-cosEndpoint = listVars[0]['credentials']['endpoints']
-cosIntanceCrn = listVars[0]['credentials']['resource_instance_id']
 
-# # Create resource
-cos = ibm_boto3.resource("s3",
-    ibm_api_key_id=cosApiKey,
-    ibm_service_instance_id=cosIntanceCrn,
-    config=Config(signature_version="oauth"),
-    endpoint_url=cosEndpoint
-)
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -108,6 +96,19 @@ def getAllVars():
         print("{0}: {1}".format(name, value))
     return allVars
 
+# Get COS credentials from Schematics workspace
+listVars = ceVarsToList()
+cosApiKey = listVars[0]['credentials']['apikey']
+cosEndpoint = listVars[0]['credentials']['endpoints']
+cosIntanceCrn = listVars[0]['credentials']['resource_instance_id']
+
+# # Create resource
+cos = ibm_boto3.resource("s3",
+    ibm_api_key_id=cosApiKey,
+    ibm_service_instance_id=cosIntanceCrn,
+    config=Config(signature_version="oauth"),
+    endpoint_url=cosEndpoint
+)
 # def etcdRead(etcdClient, etcdKey):
 #     etcdValue = etcdClient.get(etcdKey)
 #     return etcdValue
