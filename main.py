@@ -107,6 +107,7 @@ def etcdWrite(etcdClient):
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
 try:
+    get_logger()
     log.warning("Warning message", extra={'app': 'bloop'})
     log("Info message from " + str(hst))
     log.error("This is an Error message")
