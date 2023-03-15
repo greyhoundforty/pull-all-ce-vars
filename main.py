@@ -34,7 +34,7 @@ def etcdClient():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
     connectionVars = list(connectionJson.values())[1]
-    dbCertInfo = connectionVars[0]['credentials']['connection'][0]
+    dbCertInfo = connectionVars[0]['credentials']['connection']
     # dbVars = connectionVars[0]
     # cert = dbVars['credentials']['connection']
 
