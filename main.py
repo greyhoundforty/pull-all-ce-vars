@@ -148,7 +148,7 @@ def get_buckets(cos):
 
 try:
 
-    get_buckets()
+    get_buckets(cos)
     # listVars = ceVarsToList()
     # # print("List Vars type: " + str(type(listVars)))
     # # print(listVars)
