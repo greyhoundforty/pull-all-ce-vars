@@ -28,28 +28,31 @@ schematicsService = SchematicsV1(authenticator=authenticator)
 schematicsURL = "https://us.schematics.cloud.ibm.com"
 schematicsService.set_service_url(schematicsURL)
 
-etcdServiceVars = os.environ.get('DB_CONNECTION_CONNECTION')
-connectionJson = json.loads(etcdServiceVars)
-connectionVars = list(connectionJson.values())[1]
-encodedCert = connectionVars['certificate']['certificate_base64']
-certName = connectionVars['certificate']['name']
-certFileName = certName + '.crt'
-ca_cert=base64.b64decode(encodedCert)
-decodedCert = ca_cert.decode('utf-8')
 
-etcdCert = '/usr/src/app/' + certFileName
-with open(etcdCert, 'w+') as output_file:
-    output_file.write(decodedCert)
+# # Set up etcd service client
+def etcdClient():
+    etcdServiceVars = os.environ.get('CE_SERVICES')
+    connectionJson = json.loads(etcdServiceVars)
+    connectionVars = list(connectionJson.values())[1]
+    encodedCert = connectionVars['certificate']['certificate_base64']
+    certName = connectionVars['certificate']['name']
+    certFileName = certName + '.crt'
+    ca_cert=base64.b64decode(encodedCert)
+    decodedCert = ca_cert.decode('utf-8')
 
-# Set up etcd service client
-etcdClient = etcd3.client(
-    host=connectionVars['hosts'][0]['hostname'],
-    port=connectionVars['hosts'][0]['port'], 
-    ca_cert=etcdCert, 
-    timeout=10, 
-    user=connectionVars['authentication']['username'], 
-    password=connectionVars['authentication']['password']
-)
+    etcdCert = '/usr/src/app/' + certFileName
+    with open(etcdCert, 'w+') as output_file:
+        output_file.write(decodedCert)
+
+    etcdClient = etcd3.client(
+        host=connectionVars['hosts'][0]['hostname'],
+        port=connectionVars['hosts'][0]['port'], 
+        ca_cert=etcdCert, 
+        timeout=10, 
+        user=connectionVars['authentication']['username'], 
+        password=connectionVars['authentication']['password']
+        )
+    return etcdClient
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -104,9 +107,10 @@ def etcdWrite(etcdClient):
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
 try:
-    print("Pulling all ce vars")
-    allVars = getAllVars()
-    print(allVars)
+    etcdWrite(etcdClient)
+    # print("Pulling all ce vars")
+    # allVars = getAllVars()
+    # print(allVars)
     # get_logger()
     # log.warning("Warning message", extra={'app': 'bloop'})
     # log("Info message from " + str(hst))
@@ -119,10 +123,14 @@ try:
     # print(ceVarsJson)
     # print("Pulling all CE vars as list")
     # ceVarsList = ceVarsToList()
-    # print(ceVarsList)
+    # # print(ceVarsList)
     # print("Pulling COS vars from list")
     # cosVars = ceVarsList[0]
     # print(cosVars)
+    
+    # print("pulling db details from ce services var")
+    # etcdVars = ceVarsList[1]
+    # print(etcdVars)
     # # # print("List Vars type: " + str(type(listVars)))
     # # # print(listVars)
     # # print("printing COS list var")
@@ -142,6 +150,6 @@ try:
     # print("logging key: " + loggingKey)
     # listVars = ceVarsToList()
     # print(listVars)
-except Exception as e:
-    print("Something went wonky " + str(e))
+except KeyError():
+    print("Key error")
     
