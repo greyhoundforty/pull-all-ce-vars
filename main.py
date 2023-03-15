@@ -62,7 +62,7 @@ def ceVarsToJson():
 
 def ceVarsToList():
     jsonVars = ceVarsToJson()
-    ceVarsList = list(jsonVars.values())
+    ceVarsList = list(jsonVars.values())[0]
     return ceVarsList
 
 
@@ -114,12 +114,12 @@ try:
     # print("Pulling all CE vars as JSON")
     # ceVarsJson = ceVarsToJson()
     # print(ceVarsJson)
-    # print("Pulling all CE vars as list")
+    print("Pulling all CE vars as list")
     ceVarsList = ceVarsToList()
     print(ceVarsList)
-    print("Pulling COS vars from list")
-    cosVars = ceVarsList[0]
-    print(cosVars)
+    # print("Pulling COS vars from list")
+    # cosVars = ceVarsList[0]
+    # print(cosVars)
     # # # print("List Vars type: " + str(type(listVars)))
     # # # print(listVars)
     # # print("printing COS list var")
