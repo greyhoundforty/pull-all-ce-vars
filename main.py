@@ -122,9 +122,10 @@ try:
     # # print(interatedList['credentials']['apikey'])
     # # print("printing Etcd list var")
     # # print(listVars[1])
-    print("printing LogDNA list var")
-    print(listVars[2])
-    # # print("attempting etcd write")
+    logDnaVars = listVars[2]
+    print("Getting LogDNA ingestion key")
+    loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+    print("logging key: " + loggingKey)
     # etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
