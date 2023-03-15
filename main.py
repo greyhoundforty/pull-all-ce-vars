@@ -96,11 +96,13 @@ def getAllVars():
         print("{0}: {1}".format(name, value))
     return allVars
 
-# Get COS credentials from Schematics workspace
+
 listVars = ceVarsToList()
-cosApiKey = listVars[0]['credentials']['apikey']
-cosEndpoint = listVars[0]['credentials']['endpoints']
-cosIntanceCrn = listVars[0]['credentials']['resource_instance_id']
+cosVars = listVars[0]
+cosList = cosVars[0]
+cosApiKey = cosList['credentials']['apikey']
+cosEndpoint = cosList['credentials']['endpoints']
+cosIntanceCrn = cosList['credentials']['resource_instance_id']
 
 # # Create resource
 cos = ibm_boto3.resource("s3",
