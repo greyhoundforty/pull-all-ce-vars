@@ -76,22 +76,18 @@ etcdClient = etcd3.client(
 )
 
 # Get COS credentials from Schematics workspace
-# listVars = ceVarsToList()
-# CosAPIKey = listVars[0]['credentials']['apikey']
-
-
-# # Constants for IBM COS values
-# COS_ENDPOINT = "<endpoint>" # Current list avaiable at https://control.cloud-object-storage.cloud.ibm.com/v2/endpoints
-# COS_API_KEY_ID = "<api-key>" # eg "W00YixxxxxxxxxxMB-odB-2ySfTrFBIQQWanc--P3byk"
-# COS_INSTANCE_CRN = "<service-instance-id>" # eg "crn:v1:bluemix:public:cloud-object-storage:global:a/3bf0d9003xxxxxxxxxx1c3e97696b71c:d6f04d83-6c4f-4a62-a165-696756d63903::"
+listVars = ceVarsToList()
+cosApiKey = listVars[0]['credentials']['apikey']
+cosEndpoint = listVars[0]['credentials']['endpoints']
+cosIntanceCrn = listVars[0]['credentials']['resource_instance_id']
 
 # # Create resource
-# cos = ibm_boto3.resource("s3",
-#     ibm_api_key_id=CosAPIKey,
-#     ibm_service_instance_id=COS_INSTANCE_CRN,
-#     config=Config(signature_version="oauth"),
-#     endpoint_url=COS_ENDPOINT
-# )
+cos = ibm_boto3.resource("s3",
+    ibm_api_key_id=cosApiKey,
+    ibm_service_instance_id=cosIntanceCrn,
+    config=Config(signature_version="oauth"),
+    endpoint_url=cosEndpoint
+)
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -122,27 +118,41 @@ def etcdWrite(etcdClient):
     firstKey = etcdClient.put('/nonsense/id/1', '1234567890')
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
-try:
-    
+def create_bucket(bucket_name):
+    print("Creating new bucket: {0}".format(bucket_name))
+    try:
+        cos.Bucket(bucket_name).create(
+            CreateBucketConfiguration={
+                "LocationConstraint": "us-south"
+            }
+        )
+        print("Bucket: {0} created!".format(bucket_name))
+    except ClientError as be:
+        print("CLIENT ERROR: {0}\n".format(be))
+    except Exception as e:
+        print("Unable to create bucket: {0}".format(e))
 
-    listVars = ceVarsToList()
-    # print("List Vars type: " + str(type(listVars)))
-    # print(listVars)
-    print("printing COS list var")
-    cosVars = listVars[0]
-    print("var type: " + str(type(cosVars)))
-    print(cosVars)
-    interatedList = cosVars[0]
-    print("iterated list type: " + str(type(interatedList)))
-    print(interatedList)
-    # print("pull credentials from COS list")
-    # print(interatedList['credentials']['apikey'])
-    # print("printing Etcd list var")
-    # print(listVars[1])
-    # print("printing LogDNA list var")
-    # print(listVars[2])
-    # print("attempting etcd write")
-    etcdWrite(etcdClient)
+try:
+
+    create_bucket(bucket_name='etcd-private-rando-bucket-for-ce')
+    # listVars = ceVarsToList()
+    # # print("List Vars type: " + str(type(listVars)))
+    # # print(listVars)
+    # print("printing COS list var")
+    # cosVars = listVars[0]
+    # print("var type: " + str(type(cosVars)))
+    # print(cosVars)
+    # interatedList = cosVars[0]
+    # print("iterated list type: " + str(type(interatedList)))
+    # print(interatedList)
+    # # print("pull credentials from COS list")
+    # # print(interatedList['credentials']['apikey'])
+    # # print("printing Etcd list var")
+    # # print(listVars[1])
+    # # print("printing LogDNA list var")
+    # # print(listVars[2])
+    # # print("attempting etcd write")
+    # etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
