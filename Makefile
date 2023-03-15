@@ -1,9 +1,9 @@
 .ONESHELL:
-SHELL := /bin/bash
+SHELL := /bin/zsh
 .SHELLFLAGS += -e
 MAKEFLAGS += --warn-undefined-variables
-ENV_FILE := .env
-export $(shell sed 's/=.*//' $(ENV_FILE))
+include .env
+# export $(shell sed 's/=.*//' $(ENV_FILE))
 
 reset: auth-target ce-reset
 
@@ -25,7 +25,7 @@ ce-build-run:
 	
 	echo "Building container image from source..."
 	
-	ibmcloud ce buildrun submit --name buildrun-$$(date +%Y%m%d%H%M) --build ${buildName}
+	ibmcloud ce buildrun submit --name buildrun-$$(date +%Y%m%d%H%M) --build ${BUILD_NAME}
 	
 	ibmcloud ce buildrun logs -f -n buildrun-$$(date +%Y%m%d%H%M)
 
@@ -37,16 +37,16 @@ ce-submit-job:
 
 	echo "Following jobrun logs" 
 
-	ibmcloud ce jobrun logs -f -n $$(ibmcloud ce jobrun list -s age --job $${JOB_NAME} --output json | jq -r '.items[0].metadata.name')
+	ibmcloud ce jobrun logs -f -n $$(ibmcloud ce jobrun list -s age --job ${JOB_NAME} --output json | jq -r '.items[0].metadata.name')
 
 ce-jr-delete:
 
-	echo "Deleting all jobruns for $${JOB_NAME}"
+	echo "Deleting all jobruns for ${JOB_NAME}"
 	
-	ibmcloud ce jobrun delete --job $${JOB_NAME} --ignore-not-found --force
+	ibmcloud ce jobrun delete --job ${JOB_NAME} --ignore-not-found --force
 
 ce-br-delete:
 	
-	echo "Deleting all buildruns for $${buildName}"
+	echo "Deleting all buildruns for ${BUILD_NAME}"
 	
-	ibmcloud ce buildrun delete --build $${buildName} --ignore-not-found --force
+	ibmcloud ce buildrun delete --build ${BUILD_NAME} --ignore-not-found --force
