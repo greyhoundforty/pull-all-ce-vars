@@ -34,6 +34,7 @@ def etcdClient():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
     connectionVars = list(connectionJson.values())[1]
+    item1 = connectionVars[0]
     encodedCert = connectionVars['certificate']['certificate_base64']
     certName = connectionVars['certificate']['name']
     certFileName = certName + '.crt'
@@ -52,7 +53,7 @@ def etcdClient():
     #     user=connectionVars['authentication']['username'], 
     #     password=connectionVars['authentication']['password']
     #     )
-    return encodedCert
+    return item1
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -107,10 +108,8 @@ def etcdWrite(etcdClient):
 
 try:
     dbVars = etcdClient()
+    print("var type is: " + str(type(dbVars)))
     print(dbVars)
-
-    print(dbVars)
-
 except KeyError():
     print("Key error")
     
