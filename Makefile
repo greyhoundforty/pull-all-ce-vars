@@ -17,13 +17,12 @@ gh-push:
 	git add . && git commit -m "Building new container image" && git push
 
 ce-build-run:
-	BUILD_RUN_NAME="br-$(cat /dev/urandom | LC_ALL=C tr -dc 'a-z' | fold -w 4 | head -n 1)"
 
 	echo "Building container image from source..."
 	
-	ibmcloud ce buildrun submit --name ${BUILD_RUN_NAME} --build ${BUILD_NAME}
+	ibmcloud ce buildrun submit --name ${BUILD_NAME}-run-$$(date +%Y%m%d%H%M) --build ${BUILD_NAME}
 	
-	ibmcloud ce buildrun logs -f -n ${BUILD_RUN_NAME}
+	ibmcloud ce buildrun logs -f -n ${BUILD_NAME}-run-$$(date +%Y%m%d%H%M)
 
 ce-submit-job:
 
