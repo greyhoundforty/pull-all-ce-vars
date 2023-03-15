@@ -8,31 +8,7 @@ from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
 import logging
 from logdna import LogDNAHandler
-import ibm_boto3
-from ibm_botocore.client import Config, ClientError
-import platform
 
-def get_logger():
-    try:
-        listVars = ceVarsToList()
-        logDnaVars = listVars[2]
-        loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-        log = logging.getLogger('logdna')
-        log.setLevel(logging.INFO)
-
-        options = {
-        'env': 'code-engine',
-        'tags': 'python-etcd',
-        'app': 'python-etcd-app',
-        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
-        'log_error_response': True
-        }
-        logger = LogDNAHandler(loggingKey, options)
-        log.addHandler(logger)
-
-        return log
-    except Exception as e:
-        logging.error("Error getting logdna instance")
 # Useful for debugging, prints all environment variables
 # for name, value in os.environ.items():
 #     print("{0}: {1}".format(name, value))
@@ -89,6 +65,30 @@ def ceVarsToList():
     ceVarsList = list(jsonVars.values())
     return ceVarsList
 
+
+def get_logger():
+    try:
+        listVars = ceVarsToList()
+        logDnaVars = listVars[2]
+        loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+        log = logging.getLogger('logdna')
+        log.setLevel(logging.INFO)
+
+        options = {
+            'env': 'code-engine',
+            'tags': 'python-etcd',
+            'app': 'python-etcd-app',
+            'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+            'log_error_response': True
+        }
+        logger = LogDNAHandler(loggingKey, options)
+        log.addHandler(logger)
+
+        return log
+    except Exception as e:
+        logging.error("Error getting logdna instance")
+
+
 def getAllVars():
     for name, value in os.environ.items():
         print("{0}: {1}".format(name, value))
@@ -105,7 +105,6 @@ def etcdWrite(etcdClient):
     print("Attempting to write to etcd instance:")
     firstKey = etcdClient.put('/nonsense/id/1', '1234567890')
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
-
 
 try:
     log.warning("Warning message", extra={'app': 'bloop'})
@@ -129,7 +128,7 @@ try:
     # print("Getting LogDNA ingestion key")
     # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
     # print("logging key: " + loggingKey)
-    # etcdWrite(etcdClient)
+    etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
     
