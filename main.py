@@ -75,8 +75,6 @@ etcdClient = etcd3.client(
     password=connectionVars['authentication']['password']
 )
 
-
-
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
     return getAllCeVars
@@ -96,21 +94,8 @@ def getAllVars():
         print("{0}: {1}".format(name, value))
     return allVars
 
-
-listVars = ceVarsToList()
-cosVars = listVars[0]
-cosList = cosVars[0]
-cosApiKey = cosList['credentials']['apikey']
-cosEndpoint = cosList['credentials']['endpoints']
-cosIntanceCrn = cosList['credentials']['resource_instance_id']
-
 # # Create resource
-cos = ibm_boto3.resource("s3",
-    ibm_api_key_id=cosApiKey,
-    ibm_service_instance_id=cosIntanceCrn,
-    config=Config(signature_version="oauth"),
-    endpoint_url=cosEndpoint
-)
+
 # def etcdRead(etcdClient, etcdKey):
 #     etcdValue = etcdClient.get(etcdKey)
 #     return etcdValue
@@ -121,35 +106,9 @@ def etcdWrite(etcdClient):
     firstKey = etcdClient.put('/nonsense/id/1', '1234567890')
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
-def create_bucket(bucket_name):
-    print("Creating new bucket: {0}".format(bucket_name))
-    try:
-        cos.Bucket(bucket_name).create(
-            CreateBucketConfiguration={
-                "LocationConstraint": "us-south"
-            }
-        )
-        print("Bucket: {0} created!".format(bucket_name))
-    except ClientError as be:
-        print("CLIENT ERROR: {0}\n".format(be))
-    except Exception as e:
-        print("Unable to create bucket: {0}".format(e))
-
-def get_buckets(cos):
-    print("Retrieving list of buckets")
-    try:
-        buckets = cos.buckets.all()
-        for bucket in buckets:
-            print("Bucket Name: {0}".format(bucket.name))
-    except ClientError as be:
-        print("CLIENT ERROR: {0}\n".format(be))
-    except Exception as e:
-        print("Unable to retrieve list buckets: {0}".format(e))
 
 try:
-
-    get_buckets(cos)
-    # listVars = ceVarsToList()
+    listVars = ceVarsToList()
     # # print("List Vars type: " + str(type(listVars)))
     # # print(listVars)
     # print("printing COS list var")
@@ -163,8 +122,8 @@ try:
     # # print(interatedList['credentials']['apikey'])
     # # print("printing Etcd list var")
     # # print(listVars[1])
-    # # print("printing LogDNA list var")
-    # # print(listVars[2])
+    print("printing LogDNA list var")
+    print(listVars[2])
     # # print("attempting etcd write")
     # etcdWrite(etcdClient)
 except Exception as e:
