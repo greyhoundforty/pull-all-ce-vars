@@ -110,7 +110,7 @@ try:
     # log.error("This is an Error message")
     print("Pulling all CE vars")
     unalteredCeVars = getCeVars()
-    print(pullCeVars)
+    print(unalteredCeVars)
     print("Pulling all CE vars as JSON")
     ceVarsJson = ceVarsToJson()
     print(ceVarsJson)
