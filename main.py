@@ -129,7 +129,8 @@ try:
     # print("Getting LogDNA ingestion key")
     # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
     # print("logging key: " + loggingKey)
-    getAllVars()
+    listVars = ceVarsToList()
+    print(listVars)
 except Exception as e:
     print("Something went wonky " + str(e))
     
