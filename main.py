@@ -44,7 +44,7 @@ def etcdClient():
     with open(etcdCert, 'w+') as output_file:
         output_file.write(decodedCert)
 
-    etcdClient = etcd3.client(
+    client = etcd3.client(
         host=connectionVars['hosts'][0]['hostname'],
         port=connectionVars['hosts'][0]['port'], 
         ca_cert=etcdCert, 
@@ -52,7 +52,7 @@ def etcdClient():
         user=connectionVars['authentication']['username'], 
         password=connectionVars['authentication']['password']
         )
-    return etcdClient
+    return client
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -94,62 +94,20 @@ def getAllVars():
         print("{0}: {1}".format(name, value))
     return allVars
 
-# # Create resource
-
 # def etcdRead(etcdClient, etcdKey):
 #     etcdValue = etcdClient.get(etcdKey)
 #     return etcdValue
 
 # Write nonsense to etcd service
 def etcdWrite(etcdClient):
+    client = etcdClient()
     print("Attempting to write to etcd instance:")
-    firstKey = etcdClient.put('/nonsense/id/1', '1234567890')
-    secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
+    firstKey = client.put('/nonsense/id/1', '1234567890')
+    secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
     etcdWrite(etcdClient)
-    # print("Pulling all ce vars")
-    # allVars = getAllVars()
-    # print(allVars)
-    # get_logger()
-    # log.warning("Warning message", extra={'app': 'bloop'})
-    # log("Info message from " + str(hst))
-    # log.error("This is an Error message")
-    # print("Pulling all CE vars")
-    # unalteredCeVars = getCeVars()
-    # print(unalteredCeVars)
-    # print("Pulling all CE vars as JSON")
-    # ceVarsJson = ceVarsToJson()
-    # print(ceVarsJson)
-    # print("Pulling all CE vars as list")
-    # ceVarsList = ceVarsToList()
-    # # print(ceVarsList)
-    # print("Pulling COS vars from list")
-    # cosVars = ceVarsList[0]
-    # print(cosVars)
-    
-    # print("pulling db details from ce services var")
-    # etcdVars = ceVarsList[1]
-    # print(etcdVars)
-    # # # print("List Vars type: " + str(type(listVars)))
-    # # # print(listVars)
-    # # print("printing COS list var")
-    # # cosVars = listVars[0]
-    # # print("var type: " + str(type(cosVars)))
-    # # print(cosVars)
-    # # interatedList = cosVars[0]
-    # # print("iterated list type: " + str(type(interatedList)))
-    # # print(interatedList)
-    # # # print("pull credentials from COS list")
-    # # # print(interatedList['credentials']['apikey'])
-    # # # print("printing Etcd list var")
-    # # # print(listVars[1])
-    # logDnaVars = listVars[2]
-    # print("Getting LogDNA ingestion key")
-    # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-    # print("logging key: " + loggingKey)
-    # listVars = ceVarsToList()
-    # print(listVars)
+
 except KeyError():
     print("Key error")
     
