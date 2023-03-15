@@ -62,7 +62,7 @@ def ceVarsToJson():
 
 def ceVarsToList():
     jsonVars = ceVarsToJson()
-    ceVarsList = list(jsonVars.values())[0]
+    ceVarsList = list(jsonVars.values())
     return ceVarsList
 
 
@@ -104,6 +104,9 @@ def etcdWrite(etcdClient):
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
 try:
+    print("Pulling all ce vars")
+    allVars = getAllVars()
+    print(allVars)
     # get_logger()
     # log.warning("Warning message", extra={'app': 'bloop'})
     # log("Info message from " + str(hst))
@@ -114,9 +117,9 @@ try:
     # print("Pulling all CE vars as JSON")
     # ceVarsJson = ceVarsToJson()
     # print(ceVarsJson)
-    print("Pulling all CE vars as list")
-    ceVarsList = ceVarsToList()
-    print(ceVarsList)
+    # print("Pulling all CE vars as list")
+    # ceVarsList = ceVarsToList()
+    # print(ceVarsList)
     # print("Pulling COS vars from list")
     # cosVars = ceVarsList[0]
     # print(cosVars)
