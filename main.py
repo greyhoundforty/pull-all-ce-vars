@@ -35,7 +35,8 @@ def etcdClient():
     connectionJson = json.loads(etcdServiceVars)
     connectionVars = list(connectionJson.values())[1]
     dbVars = connectionVars[0]
-    cert = dbVars['credentials']['certificate']
+    cert = dbVars['credentials']['connection']
+    
     # certName = connectionVars['certificate']['name']
     # certFileName = certName + '.crt'
     # ca_cert=base64.b64decode(encodedCert)
