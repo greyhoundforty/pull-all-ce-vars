@@ -33,32 +33,26 @@ schematicsService.set_service_url(schematicsURL)
 def etcdClient():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
-    connectionVars = list(connectionJson.values())[1][1]
-    # dbCertInfo = connectionVars[0]['credentials']['connection']
-    # dbAuth = dbCertInfo['authentication']
+    baseVars  = list(connectionJson.values())[1][0]['credentials']['connection']
+    authVars = baseVars['grpc']['authentication']
+    connectVars = baseVars['grpc']['hosts'][0]
+    certName = baseVars['grpc']['certificate']['name']
+    encodedCert = base64.b64decode(baseVars['grpc']['certificate']['certificate_base64'])
+    decodedCert = encodedCert.decode('utf-8')
 
+    etcdCert = '/usr/src/app/' + certName
+    with open(etcdCert, 'w+') as output_file:
+        output_file.write(decodedCert)
 
-    # Lists all values in the dbCertInfo dictionary
-    # dbVars = connectionVars[0]
-    # cert = dbVars['credentials']['connection']
-
-    # certFileName = certName + '.crt'
-    # ca_cert=base64.b64decode(encodedCert)
-    # decodedCert = ca_cert.decode('utf-8')
-
-    # etcdCert = '/usr/src/app/' + certFileName
-    # with open(etcdCert, 'w+') as output_file:
-    #     output_file.write(decodedCert)
-
-    # client = etcd3.client(
-    #     host=connectionVars['hosts'][0]['hostname'],
-    #     port=connectionVars['hosts'][0]['port'], 
-    #     ca_cert=etcdCert, 
-    #     timeout=10, 
-    #     user=connectionVars['authentication']['username'], 
-    #     password=connectionVars['authentication']['password']
-    #     )
-    return connectionVars
+    client = etcd3.client(
+        host=connectVars['hostname'],
+        port=connectVars['port'], 
+        ca_cert=etcdCert, 
+        timeout=10, 
+        user=authVars['username'], 
+        password=authVars['password']
+        )
+    return client
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -105,16 +99,18 @@ def getAllVars():
 #     return etcdValue
 
 # Write nonsense to etcd service
-def etcdWrite(etcdClient):
+def etcdWrite():
     client = etcdClient()
     print("Attempting to write to etcd instance:")
     firstKey = client.put('/nonsense/id/1', '1234567890')
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
-    dbVars = etcdClient()
-    print("var type is: " + str(type(dbVars)))
-    print(dbVars)
+    "Attempting etcd write"
+    etcdWrite()
+    # dbVars = etcdClient()
+    # print("var type is: " + str(type(dbVars)))
+    # print(dbVars)
 except KeyError():
     print("Key error")
     
