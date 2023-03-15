@@ -75,6 +75,11 @@ etcdClient = etcd3.client(
     password=connectionVars['authentication']['password']
 )
 
+# Get COS credentials from Schematics workspace
+# listVars = ceVarsToList()
+# CosAPIKey = listVars[0]['credentials']['apikey']
+
+
 # # Constants for IBM COS values
 # COS_ENDPOINT = "<endpoint>" # Current list avaiable at https://control.cloud-object-storage.cloud.ibm.com/v2/endpoints
 # COS_API_KEY_ID = "<api-key>" # eg "W00YixxxxxxxxxxMB-odB-2ySfTrFBIQQWanc--P3byk"
@@ -82,7 +87,7 @@ etcdClient = etcd3.client(
 
 # # Create resource
 # cos = ibm_boto3.resource("s3",
-#     ibm_api_key_id=COS_API_KEY_ID,
+#     ibm_api_key_id=CosAPIKey,
 #     ibm_service_instance_id=COS_INSTANCE_CRN,
 #     config=Config(signature_version="oauth"),
 #     endpoint_url=COS_ENDPOINT
@@ -119,20 +124,7 @@ def etcdWrite(etcdClient):
 
 try:
     
-    # print("Attempting to pull all environment variables")
-    # allVars = getAllVars()
-    # # print("All Vars type: " + str(type(allVars)))
-    # print(allVars)
-    # print("Attempting to pull CE service variables")
-    # ceVars = getCeVars()
-    # print("CE Vars type: " + str(type(ceVars)))
-    # print(ceVars)
-    # print("CE service variables pulled")
-    # print("Attempting to convert CE service variables to JSON")
-    # jsonVars = ceVarsToJson()
-    # print("JSON Vars type: " + str(type(jsonVars)))
-    # print(jsonVars)
-    # print("Attempting to convert JSON to list")
+
     listVars = ceVarsToList()
     # print("List Vars type: " + str(type(listVars)))
     # print(listVars)
@@ -143,8 +135,8 @@ try:
     interatedList = cosVars[0]
     print("iterated list type: " + str(type(interatedList)))
     print(interatedList)
-    print("pull credentials from COS list")
-    print(interatedList['credentials']['apikey'])
+    # print("pull credentials from COS list")
+    # print(interatedList['credentials']['apikey'])
     # print("printing Etcd list var")
     # print(listVars[1])
     # print("printing LogDNA list var")
