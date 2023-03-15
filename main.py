@@ -34,25 +34,25 @@ def etcdClient():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
     connectionVars = list(connectionJson.values())[1]
-    encodedCert = connectionVars['certificate']['certificate_base64']
-    certName = connectionVars['certificate']['name']
-    certFileName = certName + '.crt'
-    ca_cert=base64.b64decode(encodedCert)
-    decodedCert = ca_cert.decode('utf-8')
+    # encodedCert = connectionVars['certificate']['certificate_base64']
+    # certName = connectionVars['certificate']['name']
+    # certFileName = certName + '.crt'
+    # ca_cert=base64.b64decode(encodedCert)
+    # decodedCert = ca_cert.decode('utf-8')
 
-    etcdCert = '/usr/src/app/' + certFileName
-    with open(etcdCert, 'w+') as output_file:
-        output_file.write(decodedCert)
+    # etcdCert = '/usr/src/app/' + certFileName
+    # with open(etcdCert, 'w+') as output_file:
+    #     output_file.write(decodedCert)
 
-    client = etcd3.client(
-        host=connectionVars['hosts'][0]['hostname'],
-        port=connectionVars['hosts'][0]['port'], 
-        ca_cert=etcdCert, 
-        timeout=10, 
-        user=connectionVars['authentication']['username'], 
-        password=connectionVars['authentication']['password']
-        )
-    return client
+    # client = etcd3.client(
+    #     host=connectionVars['hosts'][0]['hostname'],
+    #     port=connectionVars['hosts'][0]['port'], 
+    #     ca_cert=etcdCert, 
+    #     timeout=10, 
+    #     user=connectionVars['authentication']['username'], 
+    #     password=connectionVars['authentication']['password']
+    #     )
+    return connectionVars
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
@@ -106,7 +106,8 @@ def etcdWrite(etcdClient):
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
-    etcdWrite(etcdClient)
+    dbVars = etcdClient()
+    print(dbVars)
 
 except KeyError():
     print("Key error")
