@@ -12,28 +12,30 @@ import ibm_boto3
 from ibm_botocore.client import Config, ClientError
 import platform
 
+def get_logger():
+    try:
+        listVars = ceVarsToList()
+        logDnaVars = listVars[2]
+        loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+        log = logging.getLogger('logdna')
+        log.setLevel(logging.INFO)
+
+        options = {
+        'env': 'code-engine',
+        'tags': 'python-etcd',
+        'app': 'python-etcd-app',
+        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+        'log_error_response': True
+        }
+        logger = LogDNAHandler(loggingKey, options)
+        log.addHandler(logger)
+
+        return log
+    except Exception as e:
+        logging.error("Error getting logdna instance")
 # Useful for debugging, prints all environment variables
 # for name, value in os.environ.items():
 #     print("{0}: {1}".format(name, value))
-listVars = ceVarsToList()
-logDnaVars = listVars[2]
-loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-log = logging.getLogger('logdna')
-log.setLevel(logging.INFO)
-hst = platform.uname()[1]
-
-options = {
-  'env': 'code-engine',
-  'tags': 'python-etcd',
-  'app': 'python-etcd-app',
-  'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
-  'log_error_response': True
-}
-
-logAnalysis = LogDNAHandler(loggingKey, options)
-
-log.addHandler(logAnalysis)
-
 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
