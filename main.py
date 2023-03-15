@@ -10,31 +10,29 @@ import logging
 from logdna import LogDNAHandler
 import ibm_boto3
 from ibm_botocore.client import Config, ClientError
-
+import platform
 
 # Useful for debugging, prints all environment variables
 # for name, value in os.environ.items():
 #     print("{0}: {1}".format(name, value))
+listVars = ceVarsToList()
+logDnaVars = listVars[2]
+loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+log = logging.getLogger('logdna')
+log.setLevel(logging.INFO)
+hst = platform.uname()[1]
 
-# loggingIngestionKey = os.environ.get('LOGDNA_INGESTION_KEY')
+options = {
+  'env': 'code-engine',
+  'tags': 'python-etcd',
+  'app': 'python-etcd-app',
+  'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+  'log_error_response': True
+}
 
-# log = logging.getLogger('logdna')
-# log.setLevel(logging.INFO)
+logAnalysis = LogDNAHandler(loggingKey, options)
 
-# options = {
-#   'env': 'code-engine',
-#   'tags': 'python-etcd',
-#   'app': 'python-etcd-app',
-#   'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
-#   'log_error_response': True
-# }
-
-# logAnalysis = LogDNAHandler(loggingIngestionKey, options)
-
-# log.addHandler(logAnalysis)
-
-# log.warning("Warning message", extra={'app': 'bloop'})
-# log("Info message from " + str(os.environ.get('HOSTNAME')))
+log.addHandler(logAnalysis)
 
 
 # Set up IAM authenticator and pull refresh token
@@ -108,24 +106,27 @@ def etcdWrite(etcdClient):
 
 
 try:
-    listVars = ceVarsToList()
-    # # print("List Vars type: " + str(type(listVars)))
-    # # print(listVars)
-    # print("printing COS list var")
-    # cosVars = listVars[0]
-    # print("var type: " + str(type(cosVars)))
-    # print(cosVars)
-    # interatedList = cosVars[0]
-    # print("iterated list type: " + str(type(interatedList)))
-    # print(interatedList)
-    # # print("pull credentials from COS list")
-    # # print(interatedList['credentials']['apikey'])
-    # # print("printing Etcd list var")
-    # # print(listVars[1])
-    logDnaVars = listVars[2]
-    print("Getting LogDNA ingestion key")
-    loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-    print("logging key: " + loggingKey)
+    log.warning("Warning message", extra={'app': 'bloop'})
+    log("Info message from " + str(hst))
+    log.error("This is an Error message")
+    # listVars = ceVarsToList()
+    # # # print("List Vars type: " + str(type(listVars)))
+    # # # print(listVars)
+    # # print("printing COS list var")
+    # # cosVars = listVars[0]
+    # # print("var type: " + str(type(cosVars)))
+    # # print(cosVars)
+    # # interatedList = cosVars[0]
+    # # print("iterated list type: " + str(type(interatedList)))
+    # # print(interatedList)
+    # # # print("pull credentials from COS list")
+    # # # print(interatedList['credentials']['apikey'])
+    # # # print("printing Etcd list var")
+    # # # print(listVars[1])
+    # logDnaVars = listVars[2]
+    # print("Getting LogDNA ingestion key")
+    # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+    # print("logging key: " + loggingKey)
     # etcdWrite(etcdClient)
 except Exception as e:
     print("Error writing to etcd service: " + str(e))
