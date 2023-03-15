@@ -5,8 +5,6 @@ MAKEFLAGS += --warn-undefined-variables
 include .env
 # export $(shell sed 's/=.*//' $(ENV_FILE))
 
-reset: auth-target ce-reset
-
 ce-reset: ce-jr-delete ce-br-delete
 
 push-and-follow: gh-push ce-build-run ce-submit-job

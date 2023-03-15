@@ -33,9 +33,8 @@ schematicsService.set_service_url(schematicsURL)
 def etcdClient():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
-    connectionVars = list(connectionJson.values())[1]
-    item1 = connectionVars[0]
-    # encodedCert = connectionVars['certificate']['certificate_base64']
+    connectionVars = list(connectionJson.values())[1][0]
+    encodedCert = connectionVars['certificate']['certificate_base64']
     # certName = connectionVars['certificate']['name']
     # certFileName = certName + '.crt'
     # ca_cert=base64.b64decode(encodedCert)
@@ -53,7 +52,7 @@ def etcdClient():
     #     user=connectionVars['authentication']['username'], 
     #     password=connectionVars['authentication']['password']
     #     )
-    return item1
+    return encodedCert
 
 def getCeVars():
     getAllCeVars = os.environ.get('CE_SERVICES')
