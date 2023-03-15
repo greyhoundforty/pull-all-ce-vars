@@ -97,7 +97,7 @@ def getAllVars():
 def etcdRead(key):
     client = etcdClient()
     keyValue = client.get(key)
-    return etcdValue
+    return keyValue
 
 # Write nonsense to etcd service
 def etcdWrite():
@@ -112,6 +112,7 @@ try:
     print("Attempting to read from etcd instance:")
     nonsenseId1 = etcdRead(key='/nonsense/id/1')
     print(nonsenseId1)
+
     # dbVars = etcdClient()
     # print("var type is: " + str(type(dbVars)))
     # print(dbVars)
