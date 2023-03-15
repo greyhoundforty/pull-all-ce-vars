@@ -135,9 +135,20 @@ def create_bucket(bucket_name):
     except Exception as e:
         print("Unable to create bucket: {0}".format(e))
 
+def get_buckets(cos):
+    print("Retrieving list of buckets")
+    try:
+        buckets = cos.buckets.all()
+        for bucket in buckets:
+            print("Bucket Name: {0}".format(bucket.name))
+    except ClientError as be:
+        print("CLIENT ERROR: {0}\n".format(be))
+    except Exception as e:
+        print("Unable to retrieve list buckets: {0}".format(e))
+
 try:
 
-    create_bucket(bucket_name='etcd-private-rando-bucket-for-ce')
+    get_buckets()
     # listVars = ceVarsToList()
     # # print("List Vars type: " + str(type(listVars)))
     # # print(listVars)
