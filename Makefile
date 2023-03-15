@@ -12,9 +12,8 @@ ce-reset: ce-jr-delete ce-br-delete
 push-and-follow: gh-push ce-build-run ce-submit-job
 
 auth-target:
-	PROJECT_NAME="cde-rolling-bm-iaas"
 	ibmcloud login -a https://cloud.ibm.com -r us-south -g CDE -q
-	ibmcloud ce project target --name cde-rolling-bm-iaas
+	ibmcloud ce project target --name ${PROJECT_NAME}
 
 gh-push:
 	git add . && git commit -m "Building new container image" && git push
