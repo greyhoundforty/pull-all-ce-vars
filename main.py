@@ -109,8 +109,14 @@ try:
     # log("Info message from " + str(hst))
     # log.error("This is an Error message")
     print("Pulling all CE vars")
-    pullCeVars = getCeVars()
+    unalteredCeVars = getCeVars()
     print(pullCeVars)
+    print("Pulling all CE vars as JSON")
+    ceVarsJson = ceVarsToJson()
+    print(ceVarsJson)
+    print("Pulling all CE vars as list")
+    ceVarsList = ceVarsToList()
+    print(ceVarsList)
     # listVars = ceVarsToList()
     # # # print("List Vars type: " + str(type(listVars)))
     # # # print(listVars)
@@ -129,8 +135,8 @@ try:
     # print("Getting LogDNA ingestion key")
     # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
     # print("logging key: " + loggingKey)
-    listVars = ceVarsToList()
-    print(listVars)
+    # listVars = ceVarsToList()
+    # print(listVars)
 except Exception as e:
     print("Something went wonky " + str(e))
     
