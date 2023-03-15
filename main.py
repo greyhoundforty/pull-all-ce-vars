@@ -67,26 +67,23 @@ def ceVarsToList():
 
 
 def get_logger():
-    try:
-        listVars = ceVarsToList()
-        logDnaVars = listVars[2]
-        loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-        log = logging.getLogger('logdna')
-        log.setLevel(logging.INFO)
+    listVars = ceVarsToList()
+    logDnaVars = listVars[2]
+    loggingKey = logDnaVars[0]['credentials']['ingestion_key']
+    log = logging.getLogger('logdna')
+    log.setLevel(logging.INFO)
 
-        options = {
-            'env': 'code-engine',
-            'tags': 'python-etcd',
-            'app': 'python-etcd-app',
-            'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
-            'log_error_response': True
-        }
-        logger = LogDNAHandler(loggingKey, options)
-        log.addHandler(logger)
+    options = {
+        'env': 'code-engine',
+        'tags': 'python-etcd',
+        'app': 'python-etcd-app',
+        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+        'log_error_response': True
+    }
+    logger = LogDNAHandler(loggingKey, options)
+    log.addHandler(logger)
 
-        return log
-    except Exception as e:
-        logging.error("Error getting logdna instance")
+    return log
 
 
 def getAllVars():
@@ -107,10 +104,13 @@ def etcdWrite(etcdClient):
     secondKey = etcdClient.put('/nonsense/id/2', '0987654321')
 
 try:
-    get_logger()
-    log.warning("Warning message", extra={'app': 'bloop'})
-    log("Info message from " + str(hst))
-    log.error("This is an Error message")
+    # get_logger()
+    # log.warning("Warning message", extra={'app': 'bloop'})
+    # log("Info message from " + str(hst))
+    # log.error("This is an Error message")
+    print("Pulling all CE vars")
+    pullCeVars = getCeVars()
+    print(pullCeVars)
     # listVars = ceVarsToList()
     # # # print("List Vars type: " + str(type(listVars)))
     # # # print(listVars)
@@ -129,7 +129,7 @@ try:
     # print("Getting LogDNA ingestion key")
     # loggingKey = logDnaVars[0]['credentials']['ingestion_key']
     # print("logging key: " + loggingKey)
-    etcdWrite(etcdClient)
+    getAllVars()
 except Exception as e:
-    print("Error writing to etcd service: " + str(e))
+    print("Something went wonky " + str(e))
     
