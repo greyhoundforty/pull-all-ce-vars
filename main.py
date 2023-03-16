@@ -6,7 +6,7 @@ import etcd3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
-
+import time 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
     apikey=os.environ.get('IBMCLOUD_API_KEY'),
@@ -238,6 +238,9 @@ try:
     writeUbuntu = etcdWrite('/current-servers/ubuntu_server_id', value=newUbuntuServerId)
     writeWindows = etcdWrite('/current-servers/windows_server_id', value=newWindowsServerId)
     print("Server IDs written to etcd instance.")
-except ApiException(code): 
-    print("Error: " + str(code))
-    print("Please check the logs by running the following command: ibmcloud schematics job logs --id " + applyActivityId)
+except ApiException as ae:
+    print("Schematics update and apply failed.")
+    print(" - status code: " + str(ae.code))
+    print(" - error message: " + ae.message)
+    if ("reason" in ae.http_response.json()):
+        print(" - reason: " + ae.http_response.json()["reason"])
