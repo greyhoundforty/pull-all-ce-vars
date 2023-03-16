@@ -128,17 +128,22 @@ def etcdRead(key):
     return keyValue
 
 # Write Schematics output IDs to etcd service
-def etcdWrite():
+def etcdWrite(key, value):
     client = etcdClient()
-    print("Attempting to write to etcd instance:")
-    firstKey = client.put('/nonsense/id/1', '1234567890')
-    secondKey = client.put('/nonsense/id/2', '0987654321')
+    writeKey = client.put(key, value)
 
 try:
     # allOutputs = pullAllWorkspaceOutputs()
-    print("Attempting to pull specific workspace output:")
+    print("Pulling Centos server ID from workspace output:")
     centosServerId = getWorkspaceOutputs(instance='centos_server_id')
-    print(centosServerId)
+    print("Server ID pulled. Writing to etcd instance:")
+    writeCentos = etcdWrite('/current-servers/centos_id', value=centosServerId)
+    print("Server ID written to etcd instance. Now attempting to read from etcd instance:")
+    centosId = etcdRead(key='/current-servers/centos_server_id')
+    print("")
+    transformedId = centosId[0].decode('utf-8')
+    print("Centos Server ID pulled from etcd: " + transformedId)
+    
     # print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
     # print("Attempting to write to etcd instance with updated connection client:")
