@@ -219,8 +219,8 @@ try:
     writeCentos = etcdWrite('/update-cancel-ticket/centos_server_id', value=currentCentosServerId)
     writeUbuntu = etcdWrite('/update-cancel-ticket/ubuntu_server_id', value=currentUbuntuServerId)
     writeWindows = etcdWrite('/update-cancel-ticket/windows_server_id', value=currentWindowsServerId)
-    print("Server IDs written to cancellation queue in etcd instance.")
-    print("Starting Workspace update")
+    print("Server IDs written to cancellation queue in etcd instance. Starting Schematics Workspace update")
+    print("")
     updateWorkspace()
     print("Workspace update complete. Proceeding to Workspace plan.")
     planWorkspace()
@@ -238,28 +238,6 @@ try:
     writeUbuntu = etcdWrite('/current-servers/ubuntu_server_id', value=newUbuntuServerId)
     writeWindows = etcdWrite('/current-servers/windows_server_id', value=newWindowsServerId)
     print("Server IDs written to etcd instance.")
-
-    # print("Centos Server ID " + centosServerId + " pulled. Now attempting to write to etcd instance.")
-    # writeCentos = etcdWrite('/current-servers/centos_server_id', value=centosServerId)
-    # print("Centos Server ID " + centosServerId + " written to etcd instance.") 
-    # print("")
-    # print("Reading Centos Server ID from etcd instance.")
-    # centosId = etcdRead(key='/current-servers/centos_server_id')
-    # transformedId = centosId[0].decode('utf-8')
-    # print("Centos Server ID pulled from etcd: " + str(transformedId))
-    
-    # print("output type is: " + str(type(allOutputs)))
-    # Everything below this is working 
-    # print("Attempting to write to etcd instance with updated connection client:")
-    # etcdWrite()
-    # print("Attempting to read from etcd instance:")
-    # nonsenseId1 = etcdRead(key='/nonsense/id/1')
-    # print("")
-    # print(nonsenseId1)
-    # transformedId = nonsenseId1[0].decode('utf-8')
-    # print(transformedId)
 except ApiException(code): 
     print("Error: " + str(code))
-# except KeyError():
-#     print("Key error")
-    
+    print("Please check the logs by running the following command: ibmcloud schematics job logs --id " + applyActivityId)
