@@ -16,30 +16,55 @@ authenticator = IAMAuthenticator(
 
 refreshToken = authenticator.token_manager.request_token()['refresh_token']
 
-# Set up Schematics service client and declare workspace ID
 workspaceId = os.environ.get('WORKSPACE_ID')
-schematicsService = SchematicsV1(authenticator=authenticator)
-schematicsURL = "https://us.schematics.cloud.ibm.com"
-schematicsService.set_service_url(schematicsURL)
+# Set up Schematics service client and declare workspace ID
+def schematicsClient():
+    schematicsService = SchematicsV1(authenticator=authenticator)
+    schematicsURL = "https://us.schematics.cloud.ibm.com"
+    schematicsService.set_service_url(schematicsURL)
+    return client
 
+def pullAllWorkspaceOutputs():
+    client = schematicsClient()
+    wsOutputs = client.get_workspace_outputs(
+        w_id=workspaceId,
+    ).get_result()
 
+    getAllOutputs = (wsOutputs[0]['output_values'][0])
+    wsOuput = json.loads(getAllOutputs)
+    getAllOutputs = list(wsOuput.values())[1]
+    return getAllOutputs
+
+def getWorkspaceOutputs(instance):
+    client = schematicsClient()
+    wsOutputs = client.get_workspace_outputs(
+        w_id=workspaceId,
+    ).get_result()
+
+    getWsOutput = (wsOutputs[0]['output_values'][0][instance]['value'])
+    return getWsOutput
+
+# Pull all Code Engine service variables
+# Any services that are bound to the code engine app/job are exposed as CE_SERVICES
 def pullallCeVars():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
-    allVars  = list(connectionJson.values())
-    
+    allVars  = list(connectionJson.values())    
     return  allVars
 
+# Retrieve etcd service variables
 def getEtcdVars():
     allVars = pullallCeVars()
     etcdVars = allVars[1][0]['credentials']['connection']['grpc']
     return etcdVars
 
+# Retrieve COS service variables
 def cosVars():
     allVars = pullallCeVars()
     cosVars = allVars[0]
     return cosVars
 
+# Define etcd client
 def etcdClient():
     etcdServiceVars = getEtcdVars()
     connectVars = etcdServiceVars['hosts'][0]
@@ -81,17 +106,17 @@ def etcdWrite():
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
-    print("Attempting to write to etcd instance with updated connection client:")
-    etcdWrite()
-    print("Attempting to read from etcd instance:")
-    nonsenseId1 = etcdRead(key='/nonsense/id/1')
-    print("")
-    print(nonsenseId1)
-    transformedId = nonsenseId1[0].decode('utf-8')
-    print(transformedId)
-    # dbVars = etcdClient()
-    # print("var type is: " + str(type(dbVars)))
-    # print(dbVars)
+    allOutputs = pullAllWorkspaceOutputs()
+    print(allOutputs)
+    # Everything below this is working 
+    # print("Attempting to write to etcd instance with updated connection client:")
+    # etcdWrite()
+    # print("Attempting to read from etcd instance:")
+    # nonsenseId1 = etcdRead(key='/nonsense/id/1')
+    # print("")
+    # print(nonsenseId1)
+    # transformedId = nonsenseId1[0].decode('utf-8')
+    # print(transformedId)
 except KeyError():
     print("Key error")
     
