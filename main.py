@@ -67,7 +67,7 @@ def updateWorkspace():
     updateActivityId = wsUpdate.get('activityid')
 
     while True:
-        jobStatus = schematicsService.get_job(job_id=updateActivityId).get_result()['status']['workspace_job_status']['status_code']
+        jobStatus = client.get_job(job_id=updateActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (jobStatus == 'job_in_progress' or jobStatus == 'job_pending'):
             print("Workspace update in progress. Checking again in 30 seconds...")
             time.sleep(30)
@@ -88,7 +88,7 @@ def planWorkspace():
     planActivityId = wsPlan.get('activityid')
 
     while True:
-        planStatus = schematicsService.get_job(job_id=planActivityId).get_result()['status']['workspace_job_status']['status_code']
+        planStatus = client.get_job(job_id=planActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (planStatus == 'job_in_progress' or planStatus == 'job_pending'):
             print("Workspace plan in progress. Checking again in 30 seconds...")
             time.sleep(30)
@@ -109,7 +109,7 @@ def applyWorkspace():
     applyActivityId = wsApply.get('activityid')
 
     while True:
-        applyStatus = schematicsService.get_job(job_id=applyActivityId).get_result()['status']['workspace_job_status']['status_code']
+        applyStatus = client.get_job(job_id=applyActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (applyStatus == 'job_in_progress' or applyStatus == 'job_pending'):
             print("Workspace apply in progress. Checking again in 1 minute...")
             time.sleep(60)
