@@ -67,8 +67,8 @@ def cosVars():
 
 def getLogDNAIngestionKey():
     allVars = pullallCeVars()
-    logDnaVars = allVars[2][0]
-    return logDnaVars
+    ingestionKey = allVars[2][0]['credentials']['ingestion_key']
+    ingestionKey 
 
 
 # Define etcd client
@@ -105,7 +105,7 @@ def etcdRead(key):
     keyValue = client.get(key)
     return keyValue
 
-# Write nonsense to etcd service
+# Write Schematics output IDs to etcd service
 def etcdWrite():
     client = etcdClient()
     print("Attempting to write to etcd instance:")
@@ -117,7 +117,8 @@ try:
     print(logdetails)
 
     allOutputs = pullAllWorkspaceOutputs()
-    print(allOutputs)
+    centosServerId = getWorkspaceOutputs['centos_server_id']['value']
+    print(centosServerId)
     print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
     # print("Attempting to write to etcd instance with updated connection client:")
