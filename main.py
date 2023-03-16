@@ -30,11 +30,11 @@ def pullAllWorkspaceOutputs():
         w_id=workspaceId,
     ).get_result()
 
-    outputs = (wsOutputs[0]['output_values'][0])
+    outputs = wsOutputs[0]['output_values'][0]
     # dumpOutputs = json.dumps(outputs)
-    wsOutput = json.loads(outputs)
-    getAllOutputs = list(wsOuput.values())[1]
-    return getAllOutputs
+    # wsOutput = json.loads(outputs)
+    # getAllOutputs = list(wsOuput.values())[1]
+    return outputs
 
 def getWorkspaceOutputs(instance):
     client = schematicsClient()
@@ -64,6 +64,12 @@ def cosVars():
     allVars = pullallCeVars()
     cosVars = allVars[0]
     return cosVars
+
+def getLogDNAIngestionKey():
+    allVars = pullallCeVars()
+    logDnaVars = allVars[2][0]
+    return logDnaVars
+
 
 # Define etcd client
 def etcdClient():
@@ -107,8 +113,12 @@ def etcdWrite():
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
+    logdetails = getLogDNAIngestionKey()
+    print(logdetails)
+
     allOutputs = pullAllWorkspaceOutputs()
     print(allOutputs)
+    print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
     # print("Attempting to write to etcd instance with updated connection client:")
     # etcdWrite()
