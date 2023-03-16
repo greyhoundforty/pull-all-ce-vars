@@ -32,7 +32,7 @@ def pullAllWorkspaceOutputs():
 
     outputs = (wsOutputs[0]['output_values'][0])
     # dumpOutputs = json.dumps(outputs)
-    wsOutput = json.loads(dumpOutputs)
+    wsOutput = json.loads(outputs)
     getAllOutputs = list(wsOuput.values())[1]
     return getAllOutputs
 
