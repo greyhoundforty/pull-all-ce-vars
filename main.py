@@ -6,12 +6,6 @@ import etcd3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
-import logging
-from logdna import LogDNAHandler
-
-# Useful for debugging, prints all environment variables
-# for name, value in os.environ.items():
-#     print("{0}: {1}".format(name, value))
 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
@@ -29,17 +23,30 @@ schematicsURL = "https://us.schematics.cloud.ibm.com"
 schematicsService.set_service_url(schematicsURL)
 
 
-# # Set up etcd service client
-def etcdClient():
+def pullallCeVars():
     etcdServiceVars = os.environ.get('CE_SERVICES')
     connectionJson = json.loads(etcdServiceVars)
-    baseVars  = list(connectionJson.values())[1][0]['credentials']['connection']
-    authVars = baseVars['grpc']['authentication']
-    connectVars = baseVars['grpc']['hosts'][0]
-    certName = baseVars['grpc']['certificate']['name']
-    encodedCert = base64.b64decode(baseVars['grpc']['certificate']['certificate_base64'])
-    decodedCert = encodedCert.decode('utf-8')
+    allVars  = list(connectionJson.values())
+    
+    return  allVars
 
+def getEtcdVars():
+    allVars = pullallCeVars()
+    etcdVars = allVars[1][0]['credentials']['connection']['grpc']
+    return etcdVars
+
+def cosVars():
+    allVars = pullallCeVars()
+    cosVars = allVars[0]
+    return cosVars
+
+def etcdClient():
+    etcdServiceVars = getEtcdVars()
+    connectVars = etcdServiceVars['hosts'][0]
+    authVars    = etcdServiceVars['authentication']
+    certName = etcdServiceVars['certificate']['name']
+    encodedCert = base64.b64decode(etcdServiceVars['certificate']['certificate_base64'])
+    decodedCert = encodedCert.decode('utf-8')
     etcdCert = '/usr/src/app/' + certName
     with open(etcdCert, 'w+') as output_file:
         output_file.write(decodedCert)
@@ -54,46 +61,13 @@ def etcdClient():
         )
     return client
 
-def getCeVars():
-    getAllCeVars = os.environ.get('CE_SERVICES')
-    return getAllCeVars
-
-def ceVarsToJson():
-    allVars = getCeVars()
-    ceVarsJson = json.loads(allVars)
-    return ceVarsJson
-
-def ceVarsToList():
-    jsonVars = ceVarsToJson()
-    ceVarsList = list(jsonVars.values())
-    return ceVarsList
-
-
-def get_logger():
-    listVars = ceVarsToList()
-    logDnaVars = listVars[2]
-    loggingKey = logDnaVars[0]['credentials']['ingestion_key']
-    log = logging.getLogger('logdna')
-    log.setLevel(logging.INFO)
-
-    options = {
-        'env': 'code-engine',
-        'tags': 'python-etcd',
-        'app': 'python-etcd-app',
-        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
-        'log_error_response': True
-    }
-    logger = LogDNAHandler(loggingKey, options)
-    log.addHandler(logger)
-
-    return log
-
-
+# Useful for debugging, prints all environment variables
 def getAllVars():
     for name, value in os.environ.items():
         print("{0}: {1}".format(name, value))
     return allVars
 
+# Read from etcd service
 def etcdRead(key):
     client = etcdClient()
     keyValue = client.get(key)
@@ -107,13 +81,14 @@ def etcdWrite():
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
-    "Attempting etcd write"
+    print("Attempting to write to etcd instance with updated connection client:")
     etcdWrite()
     print("Attempting to read from etcd instance:")
     nonsenseId1 = etcdRead(key='/nonsense/id/1')
+    print("")
     print(nonsenseId1)
-    log = get_logger()
-    log.info(nonsenseId1)
+    transformedId = nonsenseId1[0].decode('utf-8')
+    print(transformedId)
     # dbVars = etcdClient()
     # print("var type is: " + str(type(dbVars)))
     # print(dbVars)
