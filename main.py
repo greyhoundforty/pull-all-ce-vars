@@ -19,10 +19,10 @@ refreshToken = authenticator.token_manager.request_token()['refresh_token']
 workspaceId = os.environ.get('WORKSPACE_ID')
 # Set up Schematics service client and declare workspace ID
 def schematicsClient():
-    client = SchematicsV1(authenticator=authenticator)
-    schematicsURL = "https://us.schematics.cloud.ibm.com"
-    schematicsService.set_service_url(schematicsURL)
-    return client
+    schClient = SchematicsV1(authenticator=authenticator)
+    schematicsURL = "https://private-us-east.schematics.cloud.ibm.com"
+    schClient.set_service_url(schematicsURL)
+    return schClient
 
 def pullAllWorkspaceOutputs():
     client = schematicsClient()
