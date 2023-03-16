@@ -53,6 +53,28 @@ def pullallCeVars():
     allVars  = list(connectionJson.values())    
     return  allVars
 
+# def logDnaLogger():
+#     allCeVars = pullallCeVars()
+#     logDnaVars = allCeVars[2][0]['credentials']['ingestion_key']
+#     log = logging.getLogger('logdna')
+#     log.setLevel(logging.INFO)
+
+#     options = {
+#     'hostname': 'pytest',
+#     'ip': '10.0.1.1',
+#     'mac': 'C0:FF:EE:C0:FF:EE'
+#     }
+
+#     # Defaults to False; when True meta objects are searchable
+#     options['index_meta'] = True
+#     options['custom_fields'] = 'meta'
+
+
+#     logger = LogDNAHandler(key, options)
+
+#     log.addHandler(logger)
+
+#     return log
 # Retrieve etcd service variables
 def getEtcdVars():
     allVars = pullallCeVars()
@@ -113,13 +135,11 @@ def etcdWrite():
     secondKey = client.put('/nonsense/id/2', '0987654321')
 
 try:
-    logdetails = getLogDNAIngestionKey()
-    print(logdetails)
-
-    allOutputs = pullAllWorkspaceOutputs()
-    centosServerId = getWorkspaceOutputs['centos_server_id']['value']
+    # allOutputs = pullAllWorkspaceOutputs()
+    print("Attempting to pull specific workspace output:")
+    centosServerId = getWorkspaceOutputs(instance='centos_server_id')
     print(centosServerId)
-    print("output type is: " + str(type(allOutputs)))
+    # print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
     # print("Attempting to write to etcd instance with updated connection client:")
     # etcdWrite()
