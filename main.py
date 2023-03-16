@@ -134,13 +134,15 @@ def etcdWrite(key, value):
 
 try:
     # allOutputs = pullAllWorkspaceOutputs()
-    print("Pulling Centos server ID from workspace output:")
+    print("Pulling Centos server ID from Schematics workspace output.")
+    print("Call is: centosServerId = getWorkspaceOutputs(instance='centos_server_id')")
     centosServerId = getWorkspaceOutputs(instance='centos_server_id')
-    print("Server ID pulled. Writing to etcd instance:")
+    print("Centos Server ID " + centosServerId + " pulled. Now attempting to write to etcd instance.")
     writeCentos = etcdWrite('/current-servers/centos_server_id', value=centosServerId)
-    print("Server ID written to etcd instance. Now attempting to read from etcd instance:")
+    print("Centos Server ID " + centosServerId + " written to etcd instance.") 
+    print("")
+    print("Reading Centos Server ID from etcd instance.")
     centosId = etcdRead(key='/current-servers/centos_server_id')
-    print(centosId)
     transformedId = centosId[0].decode('utf-8')
     print("Centos Server ID pulled from etcd: " + str(transformedId))
     
