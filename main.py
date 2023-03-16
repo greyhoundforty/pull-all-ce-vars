@@ -141,8 +141,8 @@ try:
     print("Server ID written to etcd instance. Now attempting to read from etcd instance:")
     centosId = etcdRead(key='/current-servers/centos_server_id')
     print("")
-    transformedId = centosId[0].decode('utf-8')
-    print("Centos Server ID pulled from etcd: " + transformedId)
+    transformedId = centosId[0]
+    print("Centos Server ID pulled from etcd: " + str(transformedId))
     
     # print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
