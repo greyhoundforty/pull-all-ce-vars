@@ -221,8 +221,7 @@ try:
     writeWindows = etcdWrite('/update-cancel-ticket/windows_server_id', value=currentWindowsServerId)
     print("Server IDs written to cancellation queue in etcd instance. Starting Schematics Workspace update")
     print("")
-    updateWorkspace()
-    print("Workspace update complete. Proceeding to Workspace plan.")
+
     planWorkspace()
     print("Workspace plan complete. Proceeding to Workspace apply.")
     applyWorkspace()
