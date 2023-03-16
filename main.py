@@ -137,11 +137,12 @@ try:
     print("Pulling Centos server ID from workspace output:")
     centosServerId = getWorkspaceOutputs(instance='centos_server_id')
     print("Server ID pulled. Writing to etcd instance:")
-    writeCentos = etcdWrite('/current-servers/centos_id', value=centosServerId)
+    writeCentos = etcdWrite('/current-servers/centos_server_id', value=centosServerId)
     print("Server ID written to etcd instance. Now attempting to read from etcd instance:")
     centosId = etcdRead(key='/current-servers/centos_server_id')
     print(centosId)
-    # print("Centos Server ID pulled from etcd: " + str(transformedId))
+    transformedId = centosId[0].decode('utf-8')
+    print("Centos Server ID pulled from etcd: " + str(transformedId))
     
     # print("output type is: " + str(type(allOutputs)))
     # Everything below this is working 
