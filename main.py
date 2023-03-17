@@ -7,6 +7,7 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
 import time 
+
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
     apikey=os.environ.get('IBMCLOUD_API_KEY'),
@@ -44,6 +45,7 @@ def getWorkspaceOutputs(instance):
     return getWsOutput
 
 def updateWorkspace():
+    log = logDnaLogger()
     client = schematicsClient()# Construct the terraform taint command model
     terraform_command_model = {
         'command': 'taint',
@@ -52,7 +54,7 @@ def updateWorkspace():
         'command_desc': 'Run taint on location resource',
     }
 
-    print("Tainting location resource in Workspace.")
+    log.info("Tainting location resource in Workspace.")
 
     wsUpdate = client.run_workspace_commands(
         w_id=workspaceId,
@@ -67,16 +69,17 @@ def updateWorkspace():
     while True:
         jobStatus = client.get_job(job_id=updateActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (jobStatus == 'job_in_progress' or jobStatus == 'job_pending'):
-            print("Workspace update in progress. Checking again in 30 seconds...")
+            log.info("Workspace update in progress. Checking again in 30 seconds...")
             time.sleep(30)
         elif (jobStatus == 'job_cancelled' or jobStatus == 'job_failed'):
-            log.warning("Workspace update failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + updateActivityId)
-            print("Workspace update failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + updateActivityId)
+            log.error("Workspace update failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + updateActivityId)
             break
         else:
             print("Workspace update complete. Proceeding to Workspace plan.")
             break
+
 def planWorkspace():
+    log = logDnaLogger()
     client = schematicsClient()
     wsPlan = client.plan_workspace_command(
         w_id=workspaceId,
@@ -88,16 +91,17 @@ def planWorkspace():
     while True:
         planStatus = client.get_job(job_id=planActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (planStatus == 'job_in_progress' or planStatus == 'job_pending'):
-            print("Workspace plan in progress. Checking again in 30 seconds...")
+            log.info("Workspace plan in progress. Checking again in 30 seconds...")
             time.sleep(30)
         elif (planStatus == 'job_cancelled' or planStatus == 'job_failed'):
-            print("Workspace plan failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + planActivityId)
+            log.error("Workspace plan failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + planActivityId)
             break
         else:
-            print("Workspace plan complete. Proceeding to Workspace apply.")
+            log.info("Workspace plan complete. Proceeding to Workspace apply.")
             break
 
 def applyWorkspace():
+    log = logDnaLogger()
     client = schematicsClient()
     wsApply = client.apply_workspace_command(
         w_id=workspaceId,
@@ -109,13 +113,13 @@ def applyWorkspace():
     while True:
         applyStatus = client.get_job(job_id=applyActivityId).get_result()['status']['workspace_job_status']['status_code']
         if (applyStatus == 'job_in_progress' or applyStatus == 'job_pending'):
-            print("Workspace apply in progress. Checking again in 1 minute...")
+            log.info("Workspace apply in progress. Checking again in 1 minute...")
             time.sleep(60)
         elif (applyStatus == 'job_cancelled' or applyStatus == 'job_failed'):
-            print("Workspace apply failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + applyActivityId)
+            log.error("Workspace apply failed. Please check the logs by running the following command: ibmcloud schematics job logs --id " + applyActivityId)
             break
         else:
-            print("Workspace apply complete. Gathering workspace outputs.")
+            log.info("Workspace apply complete. Gathering workspace outputs.")
             break
 
 # Pull all Code Engine service variables
@@ -126,28 +130,22 @@ def pullallCeVars():
     allVars  = list(connectionJson.values())    
     return  allVars
 
-# def logDnaLogger():
-#     allCeVars = pullallCeVars()
-#     logDnaVars = allCeVars[2][0]['credentials']['ingestion_key']
-#     log = logging.getLogger('logdna')
-#     log.setLevel(logging.INFO)
+def logDnaLogger():
+    key = getLogDNAIngestionKey()
+    log = logging.getLogger('logdna')
+    log.setLevel(logging.INFO)
 
-#     options = {
-#     'hostname': 'pytest',
-#     'ip': '10.0.1.1',
-#     'mac': 'C0:FF:EE:C0:FF:EE'
-#     }
+    options = {
+        'app': 'rolling-iaas',
+        'url': 'https://logs.us-south.logging.cloud.ibm.com/logs/ingest',
+    }
 
-#     # Defaults to False; when True meta objects are searchable
-#     options['index_meta'] = True
-#     options['custom_fields'] = 'meta'
+    logger = LogDNAHandler(key, options)
 
+    log.addHandler(logger)
 
-#     logger = LogDNAHandler(key, options)
+    return log
 
-#     log.addHandler(logger)
-
-#     return log
 # Retrieve etcd service variables
 def getEtcdVars():
     allVars = pullallCeVars()
@@ -161,10 +159,9 @@ def cosVars():
     return cosVars
 
 def getLogDNAIngestionKey():
-    allVars = pullallCeVars()
-    ingestionKey = allVars[2][0]['credentials']['ingestion_key']
-    ingestionKey 
-
+    allCeVars = pullallCeVars()
+    logDnaKey = allCeVars[2][0]['credentials']['ingestion_key']
+    return logDnaKey
 
 # Define etcd client
 def etcdClient():
@@ -212,41 +209,46 @@ def etcdgetPrefix(prefix):
 
 
 try:
-    print("Pulling currently deployed server IDs from Schematics workspace output. These will be used to pull the open cancellation ticket and update it for immediate cancellation.")
+    log = logDnaLogger()
     currentCentosServerId = getWorkspaceOutputs(instance='centos_server_id')
     currentUbuntuServerId = getWorkspaceOutputs(instance='ubuntu_server_id')
     currentWindowsServerId = getWorkspaceOutputs(instance='windows_server_id')
-    print("Server IDs pulled from Schematics output.")
-    print("") 
-    print("Writing Server IDs to cancellation queue '/update-cancel-ticket/' in etcd.")
+    log.info("The following server IDs were pulled from Schematics output.")
+    log.info("CentOS Server ID: " + currentCentosServerId)
+    log.info("Ubuntu Server ID: " + currentUbuntuServerId)
+    log.info("Windows Server ID: " + currentWindowsServerId)
+    
+    log.info("Writing Server IDs to cancellation queue '/update-cancel-ticket/' in etcd.")
     writeCentos = etcdWrite('/update-cancel-ticket/centos_server_id', value=currentCentosServerId)
     writeUbuntu = etcdWrite('/update-cancel-ticket/ubuntu_server_id', value=currentUbuntuServerId)
     writeWindows = etcdWrite('/update-cancel-ticket/windows_server_id', value=currentWindowsServerId)
-    print("Server IDs written to cancellation queue in etcd instance. Starting Schematics Workspace update")
+    
+    log.info("Server IDs written to cancellation queue in etcd instance. Starting Schematics Workspace update")
     updateWorkspace()
-    print("Workspace update complete. Proceeding to Workspace plan.")
+    log.info("Workspace update complete. Proceeding to Workspace plan.")
+    
     planWorkspace()
-    print("Workspace plan complete. Proceeding to Workspace apply.")
+    log.info("Workspace plan complete. Proceeding to Workspace apply.")
+    
     applyWorkspace()
-    print("Workspace apply complete. Proceeding to Workspace output pull.")
-    print("Pulling newly deployed server IDs from Schematics workspace output.")
+    log.info("Workspace apply complete. Proceeding to Workspace output pull.")
+    
+    log.info("Pulling newly deployed server IDs from Schematics workspace output.")
     newCentosServerId = getWorkspaceOutputs(instance='centos_server_id')
     newUbuntuServerId = getWorkspaceOutputs(instance='ubuntu_server_id')
     newWindowsServerId = getWorkspaceOutputs(instance='windows_server_id')
-    print("Server IDs pulled from Schematics output.")
-    print("")
-    print("Writing Server IDs to etcd instance.")
+    
+    log.info("Server IDs pulled from Schematics output.")
+    log.info("CentOS Server ID: " + newCentosServerId)
+    log.info("Ubuntu Server ID: " + newUbuntuServerId)
+    log.info("Windows Server ID: " + newWindowsServerId)
+    
+    log.info("Writing new server IDs to etcd instance.")
     writeCentos = etcdWrite('/current-servers/centos_server_id', value=newCentosServerId)
     writeUbuntu = etcdWrite('/current-servers/ubuntu_server_id', value=newUbuntuServerId)
     writeWindows = etcdWrite('/current-servers/windows_server_id', value=newWindowsServerId)
+    
     print("Server IDs written to etcd instance.")
-    print("")
-    print("reading keys from etcd")
-    readCentos = etcdRead(key='/current-servers/centos_server_id')
-    print(readCentos)
-    print("")
-    print("reading prefix")
-    cancelPrefixIds = etcdgetPrefix(prefix='/update-cancel-ticket/')
 except ApiException as ae:
     print("Schematics update and apply failed.")
     print(" - status code: " + str(ae.code))
