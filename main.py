@@ -31,9 +31,7 @@ def pullAllWorkspaceOutputs():
     ).get_result()
 
     outputs = wsOutputs[0]['output_values'][0]
-    # dumpOutputs = json.dumps(outputs)
-    # wsOutput = json.loads(outputs)
-    # getAllOutputs = list(wsOuput.values())[1]
+
     return outputs
 
 def getWorkspaceOutputs(instance):
@@ -207,8 +205,13 @@ def etcdWrite(key, value):
     client = etcdClient()
     writeKey = client.put(key, value)
 
+def etcdgetPrefix(prefix):
+    client = etcdClient()
+    prefixKeys = client.get_prefix(prefix)
+    return prefixKeys
+
+
 try:
-    # allOutputs = pullAllWorkspaceOutputs()
     print("Pulling currently deployed server IDs from Schematics workspace output. These will be used to pull the open cancellation ticket and update it for immediate cancellation.")
     currentCentosServerId = getWorkspaceOutputs(instance='centos_server_id')
     currentUbuntuServerId = getWorkspaceOutputs(instance='ubuntu_server_id')
@@ -220,8 +223,8 @@ try:
     writeUbuntu = etcdWrite('/update-cancel-ticket/ubuntu_server_id', value=currentUbuntuServerId)
     writeWindows = etcdWrite('/update-cancel-ticket/windows_server_id', value=currentWindowsServerId)
     print("Server IDs written to cancellation queue in etcd instance. Starting Schematics Workspace update")
-    print("")
-
+    updateWorkspace()
+    print("Workspace update complete. Proceeding to Workspace plan.")
     planWorkspace()
     print("Workspace plan complete. Proceeding to Workspace apply.")
     applyWorkspace()
@@ -237,6 +240,13 @@ try:
     writeUbuntu = etcdWrite('/current-servers/ubuntu_server_id', value=newUbuntuServerId)
     writeWindows = etcdWrite('/current-servers/windows_server_id', value=newWindowsServerId)
     print("Server IDs written to etcd instance.")
+    print("")
+    print("reading keys from etcd")
+    readCentos = etcdRead(key='/current-servers/centos_server_id')
+    print(readCentos)
+    print("")
+    print("reading prefix")
+    cancelPrefixIds = etcdgetPrefix(prefix='/update-cancel-ticket/')
 except ApiException as ae:
     print("Schematics update and apply failed.")
     print(" - status code: " + str(ae.code))
