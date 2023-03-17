@@ -7,6 +7,8 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_cloud_sdk_core import ApiException
 from ibm_schematics.schematics_v1 import SchematicsV1
 import time 
+import logging
+from logdna import LogDNAHandler
 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
