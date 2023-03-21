@@ -62,6 +62,7 @@ def cosPath():
 #     pullCosVars = getCosCeVars()
 #     cosInstanceCrn = pullCosVars['credentials']['resource_instance_id']
 #     cosApiKey = pullCosVars['credentials']['apikey']
+ #cosEndpoint = 'https://s3.direct.us-south.cloud-object-storage.appdomain.cloud'
 #     cosEndpoint = ("https://" + os.environ.get('COS_ENDPOINT'))
 #     cos = ibm_boto3.resource("s3",
 #         ibm_api_key_id=cosApiKey,
@@ -98,7 +99,5 @@ def getAllVars():
 try:
     print("Pulling all Code Engine Environment variables")
     getAllVars()
-    constructedCosPath = cosPath()
-    print("Constructed COS Path: " + constructedCosPath)
 except Exception as e:
     print("Error: " + str(e))
