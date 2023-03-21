@@ -34,7 +34,7 @@ def logDnaLogger():
 
     options = {
         'app': 'pull-all-ce-vars',
-        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
+        'url': 'https://logs.us-south.logging.cloud.ibm.com/logs/ingest',
         'index_meta': True,
         'tags': 'pull-all-ce-vars'
     }
