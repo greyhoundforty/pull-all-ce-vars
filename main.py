@@ -32,7 +32,7 @@ def logDnaLogger():
 
     options = {
         'app': 'pull-all-ce-vars',
-        'url': 'https://logs.private.us-south.logging.cloud.ibm.comlogs/ingest',
+        'url': 'https://logs.private.us-south.logging.cloud.ibm.com/logs/ingest',
     }
 
     logger = LogDNAHandler(key, options)
