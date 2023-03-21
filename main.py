@@ -79,11 +79,12 @@ def writeCosFile():
     haikunator = Haikunator()
     basename = haikunator.haikunate(token_length=0, delimiter='')
     cosBucket = 'dummy-us-south-cancel-bucket'
-    cosFilePath = versionYear + '/' + versionMonth + '/' + versionDay + '/' 
+    cosFilePath = str(versionYear + '/' + versionMonth + '/' + versionDay + '/')
     cosFile = cosFilePath + 'test.txt'
-    cosFileContents = basename
+    return cosFile
+    # cosFileContents = basename
 
-    client.Object(cosBucket, cosFile).put(Body=cosFileContents)
+    # client.Object(cosBucket, cosFile).put(Body=cosFileContents)
 
 def listBuckets():
     client = cosClient()
@@ -97,12 +98,14 @@ def listBuckets():
 #         print("{0}: {1}".format(name, value))
 
 try:
-    log = logDnaLogger()
-    log.debug("Pulling all buckets and testing debug logging")
+    # log = logDnaLogger()
+    # log.debug("Pulling all buckets and testing debug logging")
+    print("Pulling all buckets")
     listBuckets()
-    # print("Starting write to COS")
-    # writeCosFile()
-    # print("Finished write to COS")
+    print("Finished pulling all buckets")
+    print("Starting write to COS")
+    writeCosFile()
+    print("Finished write to COS")
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
