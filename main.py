@@ -93,9 +93,9 @@ def writeCosFile():
 
 try:
     log = logDnaLogger()
-    log.info("Starting write to COS")
+    print("Starting write to COS")
     writeCosFile()
-    log.info("Finished write to COS")
+    print("Finished write to COS")
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
