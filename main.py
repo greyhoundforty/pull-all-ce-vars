@@ -24,9 +24,14 @@ def pullallCeVars():
     allVars  = list(ceVarsToJson.values())    
     return  allVars
 
+def getLogDNAIngestionKey():
+    allVars = pullallCeVars()
+    ingestionKey = allVars[1][0]['credentials']['ingestion_key']
+    return ingestionKey
+
 def logDnaLogger():
-    # key = getLogDNAIngestionKey()
-    key = os.environ.get('LOGDNA_INGESTION_KEY')
+    key = getLogDNAIngestionKey()
+    # key = os.environ.get('LOGDNA_INGESTION_KEY')
     log = logging.getLogger('logdna')
     log.setLevel(logging.INFO)
 
@@ -40,21 +45,10 @@ def logDnaLogger():
     return log
 
 # Retrieve COS service variables
-def firstCeVar():
+def getCosCeVars():
     allVars = pullallCeVars()
-    firstVar = allVars[0]
-    return firstVar
-
-def secondCeVar():
-    allVars = pullallCeVars()
-    secondVar = allVars[1]
-    return secondVar
-
-
-# def getLogDNAIngestionKey():
-#     allCeVars = pullallCeVars()
-#     logDnaKey = allCeVars[2][0]['credentials']['ingestion_key']
-#     return logDnaKey
+    cosVars = allVars[0][0]
+    return cosVars
 
 # Useful for debugging, prints all environment variables
 # def getAllVars():
@@ -63,12 +57,12 @@ def secondCeVar():
 
 try:
     log = logDnaLogger()
-    print("Pulling all CE service bindings")
-    pullallCeVars()
-    fVar = firstCeVar()
-    sVar = secondCeVar()
-    print("First CE service binding: " + str(fVar))
-    print("Second CE service binding: " + str(sVar))
+    # print("Pulling all CE service bindings")
+    # pullallCeVars()
+    fVar = getCosCeVars()
+    print("Pulling COS service variables: " + str(fVar))
+    sVar = getLogDNAIngestionKey()
+    print("Pulling ingestion key from second CE var in list: " + str(sVar))
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
