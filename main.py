@@ -85,6 +85,11 @@ def writeCosFile():
 
     client.Object(cosBucket, cosFile).put(Body=cosFileContents)
 
+def listBuckets():
+    client = cosClient()
+    for bucket in client.buckets.all():
+        print(bucket.name)
+
 
 # Useful for debugging, prints all environment variables
 # def getAllVars():
@@ -93,9 +98,11 @@ def writeCosFile():
 
 try:
     log = logDnaLogger()
-    print("Starting write to COS")
-    writeCosFile()
-    print("Finished write to COS")
+    log.debug("Pulling all buckets and testing debug logging")
+    listBuckets()
+    # print("Starting write to COS")
+    # writeCosFile()
+    # print("Finished write to COS")
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
