@@ -25,7 +25,8 @@ def pullallCeVars():
     return  allVars
 
 def logDnaLogger():
-    key = getLogDNAIngestionKey()
+    # key = getLogDNAIngestionKey()
+    key = os.environ.get('LOGDNA_INGESTION_KEY')
     log = logging.getLogger('logdna')
     log.setLevel(logging.INFO)
 
