@@ -1,6 +1,7 @@
 import json
 import os
-import time 
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_cloud_sdk_core import ApiException, BaseService
 import logging
 from logdna import LogDNAHandler
 import ibm_boto3
@@ -15,14 +16,16 @@ def cosPath():
     cosPath = today.strftime("%Y") + '/' + today.strftime("%m") + '/' + today.strftime("%d") + '/'
     return cosPath
 
-# Set up IAM authenticator and pull refresh token
-authenticator = IAMAuthenticator(
-    apikey=os.environ.get('IBMCLOUD_API_KEY'),
-    client_id='bx',
-    client_secret='bx'
-    )
-
-refreshToken = authenticator.token_manager.request_token()['refresh_token']
+def iamAuthenticator():
+    authenticator = IAMAuthenticator(
+        apikey=os.environ.get('IBMCLOUD_API_KEY'),
+        client_id='bx',
+        client_secret='bx'
+        )
+    
+    refreshToken = authenticator.token_manager.request_token()['refresh_token']
+    
+    return authenticator, refreshToken
 
 def logDnaLogger():
     key = os.environ.get('LOG_INGESTION_KEY')
