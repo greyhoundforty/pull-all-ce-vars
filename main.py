@@ -6,6 +6,17 @@ from ibm_cloud_sdk_core import ApiException
 import time 
 import logging
 from logdna import LogDNAHandler
+import ibm_boto3
+from ibm_botocore.client import Config, ClientError
+from haikunator import Haikunator
+from datetime import datetime, timedelta
+
+today = datetime.now()
+versionYear = today.strftime("%Y")
+versionMonth = date.strftime("%m")
+versionDay = date.strftime("%d")
+
+
 
 # Set up IAM authenticator and pull refresh token
 authenticator = IAMAuthenticator(
@@ -50,6 +61,31 @@ def getCosCeVars():
     cosVars = allVars[0][0]
     return cosVars
 
+def cosClient():
+    pullCosVars = getCosCeVars()
+    cosInstanceCrn = pullCosVars['credentials']['resource_instance_id']
+    cosApiKey = pullCosVars['credentials']['apikey']
+    cosEndpoint = ('https://s3.private.us-south.cloud-object-storage.appdomain.cloud')
+    cos = ibm_boto3.resource("s3",
+        ibm_api_key_id=cosApiKey,
+        ibm_service_instance_id=cosInstanceCrn,
+        config=Config(signature_version="oauth"),
+        endpoint_url=cosEndpoint
+    )
+    return cos
+
+def writeCosFile():
+    client = cosClient()
+    haikunator = Haikunator()
+    basename = haikunator.haikunate(token_length=0, delimiter='')
+    cosBucket = 'dummy-us-south-cancel-bucket'
+    cosFilePath = versionYear + '/' + versionMonth + '/' + versionDay + '/' 
+    cosFile = cosFilePath + 'test.txt'
+    cosFileContents = basename
+
+    client.Object(cosBucket, cosFile).put(Body=cosFileContents)
+
+
 # Useful for debugging, prints all environment variables
 # def getAllVars():
 #     for name, value in os.environ.items():
@@ -57,14 +93,9 @@ def getCosCeVars():
 
 try:
     log = logDnaLogger()
-    # print("Pulling all CE service bindings")
-    # pullallCeVars()
-    fVar = getCosCeVars()
-    print("Pulling COS service variables: " + str(fVar))
-    # sVar = getLogDNAIngestionKey()
-    # print("Pulling ingestion key from second CE var in list: " + str(sVar))
-    pullCosCrn = fVar['credentials']['resource_instance_id']
-    print("Pulling COS CRN: " + str(pullCosCrn))
+    log.info("Starting write to COS")
+    writeCosFile()
+    log.info("Finished write to COS")
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
