@@ -47,7 +47,7 @@ def firstCeVar():
 
 def secondCeVar():
     allVars = pullallCeVars()
-    secondVar = allVars[0]
+    secondVar = allVars[1]
     return secondVar
 
 
