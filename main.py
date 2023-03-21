@@ -61,8 +61,10 @@ try:
     # pullallCeVars()
     fVar = getCosCeVars()
     print("Pulling COS service variables: " + str(fVar))
-    sVar = getLogDNAIngestionKey()
-    print("Pulling ingestion key from second CE var in list: " + str(sVar))
+    # sVar = getLogDNAIngestionKey()
+    # print("Pulling ingestion key from second CE var in list: " + str(sVar))
+    pullCosCrn = fVar['credentials']['resource_instance_id']
+    print("Pulling COS CRN: " + str(pullCosCrn))
 except Exception as e:
     log.error("Error: " + str(e))
 # except ApiException as ae:
