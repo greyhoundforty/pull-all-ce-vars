@@ -65,7 +65,7 @@ def cosClient():
     pullCosVars = getCosCeVars()
     cosInstanceCrn = pullCosVars['credentials']['resource_instance_id']
     cosApiKey = pullCosVars['credentials']['apikey']
-    cosEndpoint = ('https://s3.us-south.cloud-object-storage.appdomain.cloud')
+    cosEndpoint = ("https://" + os.environ.get('COS_ENDPOINT'))
     cos = ibm_boto3.resource("s3",
         ibm_api_key_id=cosApiKey,
         ibm_service_instance_id=cosInstanceCrn,
@@ -78,16 +78,19 @@ def writeCosFile():
     client = cosClient()
     haikunator = Haikunator()
     basename = haikunator.haikunate(token_length=0, delimiter='')
+    log = logDnaLogger()
     cosBucket = "dummy-us-south-cancel-bucket"
     cosFile = cosPath + "test.txt"
     cosFileContents = basename
 
+    log.info("Writing test content " + basename + " to file at: " + cosFile)
     client.Object(cosBucket, cosFile).put(Body=cosFileContents)
 
 def listBuckets():
     client = cosClient()
+    log = logDnaLogger()
     for bucket in client.buckets.all():
-        print(bucket.name)
+        log.info(bucket.name)
 
 
 # Useful for debugging, prints all environment variables
@@ -96,10 +99,6 @@ def listBuckets():
 #         print("{0}: {1}".format(name, value))
 
 try:
-    connection = cosClient()
-    print(str(connection))
-    # log = logDnaLogger()
-    # log.debug("Pulling all buckets and testing debug logging")
     print("Pulling all buckets")
     listBuckets()
     print("Finished pulling all buckets")
@@ -108,9 +107,3 @@ try:
     print("Finished write to COS")
 except Exception as e:
     log.error("Error: " + str(e))
-# except ApiException as ae:
-#     print("Schematics update and apply failed.")
-#     print(" - status code: " + str(ae.code))
-#     print(" - error message: " + ae.message)
-#     if ("reason" in ae.http_response.json()):
-#         print(" - reason: " + ae.http_response.json()["reason"])
