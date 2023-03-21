@@ -30,7 +30,7 @@ def iamAuthenticator():
 def logDnaLogger():
     key = os.environ.get('LOG_INGESTION_KEY')
     log = logging.getLogger('logdna')
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
 
     options = {
         'app': 'pull-all-ce-vars',
@@ -80,9 +80,9 @@ def getAllVars():
 
 try:
     log = logDnaLogger()
-    log.debug("Attempting to write file to COS")
+    log("Attempting to write file to COS")
     writeCosFile()
-    log.debug("Attempting to list buckets")
+    log("Attempting to list buckets")
     listBuckets()
 except Exception as e:
     log.error("Error: " + str(e))
