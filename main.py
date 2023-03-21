@@ -15,7 +15,7 @@ today = datetime.now()
 versionYear = today.strftime("%Y")
 versionMonth = today.strftime("%m")
 versionDay = today.strftime("%d")
-
+cosPath = str(versionYear + '/' + versionMonth + '/' + versionDay + '/')
 
 
 # Set up IAM authenticator and pull refresh token
@@ -65,7 +65,7 @@ def cosClient():
     pullCosVars = getCosCeVars()
     cosInstanceCrn = pullCosVars['credentials']['resource_instance_id']
     cosApiKey = pullCosVars['credentials']['apikey']
-    cosEndpoint = ('https://s3.private.us-south.cloud-object-storage.appdomain.cloud')
+    cosEndpoint = ('https://s3.us-south.cloud-object-storage.appdomain.cloud')
     cos = ibm_boto3.resource("s3",
         ibm_api_key_id=cosApiKey,
         ibm_service_instance_id=cosInstanceCrn,
@@ -78,13 +78,11 @@ def writeCosFile():
     client = cosClient()
     haikunator = Haikunator()
     basename = haikunator.haikunate(token_length=0, delimiter='')
-    cosBucket = 'dummy-us-south-cancel-bucket'
-    cosFilePath = str(versionYear + '/' + versionMonth + '/' + versionDay + '/')
-    cosFile = cosFilePath + 'test.txt'
-    return cosFile
-    # cosFileContents = basename
+    cosBucket = "dummy-us-south-cancel-bucket"
+    cosFile = cosPath + "test.txt"
+    cosFileContents = basename
 
-    # client.Object(cosBucket, cosFile).put(Body=cosFileContents)
+    client.Object(cosBucket, cosFile).put(Body=cosFileContents)
 
 def listBuckets():
     client = cosClient()
@@ -98,6 +96,8 @@ def listBuckets():
 #         print("{0}: {1}".format(name, value))
 
 try:
+    connection = cosClient()
+    print(str(connection))
     # log = logDnaLogger()
     # log.debug("Pulling all buckets and testing debug logging")
     print("Pulling all buckets")
