@@ -63,14 +63,14 @@ def secondCeVar():
 
 try:
     log = logDnaLogger()
-    log.info("Pulling all CE service bindings")
+    print("Pulling all CE service bindings")
     pullallCeVars()
     fVar = firstCeVar()
     sVar = secondCeVar()
-    log.info("First CE service binding: " + str(fVar))
-    log.info("Second CE service binding: " + str(sVar))
+    print("First CE service binding: " + str(fVar))
+    print("Second CE service binding: " + str(sVar))
 except Exception as e:
-    print("Error: " + str(e))
+    log.error("Error: " + str(e))
 # except ApiException as ae:
 #     print("Schematics update and apply failed.")
 #     print(" - status code: " + str(ae.code))
