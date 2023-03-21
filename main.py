@@ -13,8 +13,8 @@ from datetime import datetime, timedelta
 
 today = datetime.now()
 versionYear = today.strftime("%Y")
-versionMonth = date.strftime("%m")
-versionDay = date.strftime("%d")
+versionMonth = today.strftime("%m")
+versionDay = today.strftime("%d")
 
 
 
